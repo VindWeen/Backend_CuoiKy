@@ -1,4 +1,4 @@
-namespace Backend_Cuoiky.DTOs
+namespace Backend_Cuoiky.Models
 {
     public class LoginRequest
     {
