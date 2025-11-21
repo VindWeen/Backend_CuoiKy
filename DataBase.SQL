@@ -18,6 +18,7 @@ create table [dbo].[Product]
     stock int check (stock >= 0)
 )
 --Bảng Customer
+go
 create table [dbo].[Customer]
 (
     id int primary key identity(1,1),
@@ -27,6 +28,7 @@ create table [dbo].[Customer]
     address nvarchar(200)
 )
 --Bảng Order
+go
 create table [dbo].[Order]
 (
     id int primary key identity(1,1),
@@ -36,6 +38,7 @@ create table [dbo].[Order]
     total_amount decimal(18,2) check (total_amount >= 0)
 )
 --Bảng OrderDetail
+go
 create table [dbo].[OrderDetail]
 (
     order_id int foreign key (order_id) references [dbo].[Order] (id),
@@ -43,4 +46,14 @@ create table [dbo].[OrderDetail]
     quantity int check (quantity > 0),
     unit_price decimal(18,2) check (unit_price >= 0),
     primary key (order_id, product_id)
+)
+
+--Bảng User
+go
+create table [dbo].[User]
+(
+    id int primary key identity(1,1),
+    username nvarchar(50) not null unique,
+    password nvarchar(100) not null,
+    role nvarchar(50) check (role in ('admin', 'customer'))
 )
