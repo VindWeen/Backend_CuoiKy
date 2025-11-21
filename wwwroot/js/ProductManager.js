@@ -178,6 +178,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load danh sách sản phẩm ngay khi mở trang
   loadProducts();
+  // === Thêm đoạn xử lý hiển thị tên file ===
+  const fileInput = document.getElementById("image");
+  const fileLabel = document.querySelector(".file-input-label");
+
+  fileInput.addEventListener("change", function() {
+    if (this.files && this.files.length > 0) {
+      let fileName = this.files[0].name;
+      // Rút gọn nếu tên quá dài
+      if (fileName.length > 25) {
+        const ext = fileName.split('.').pop();
+        fileName = fileName.slice(0, 22) + '...' + ext;
+      }
+      fileLabel.textContent = fileName;
+    } else {
+      fileLabel.textContent = "Chọn ảnh sản phẩm"; // Reset nếu xóa file
+    }
+  });
 });
 
 // Export hàm global để onclick trong HTML gọi được
