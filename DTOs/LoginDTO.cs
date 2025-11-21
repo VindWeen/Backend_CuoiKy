@@ -1,4 +1,4 @@
-namespace DTOs
+namespace Backend_Cuoiky.DTOs
 {
     public class LoginDTO
     {

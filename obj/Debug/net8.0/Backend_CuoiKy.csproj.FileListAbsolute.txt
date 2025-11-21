@@ -137,3 +137,15 @@ D:\Backend\Backend_CuoiKy\obj\Debug\net8.0\refint\Backend_CuoiKy.dll
 D:\Backend\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.pdb
 D:\Backend\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.genruntimeconfig.cache
 D:\Backend\Backend_CuoiKy\obj\Debug\net8.0\ref\Backend_CuoiKy.dll
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.csproj.AssemblyReference.cache
+E:\Backend_CuoiKy\obj\Debug\net8.0\rpswa.dswa.cache.json
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.GeneratedMSBuildEditorConfig.editorconfig
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.AssemblyInfoInputs.cache
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.AssemblyInfo.cs
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.csproj.CoreCompileInputs.cache
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.MvcApplicationPartsAssemblyInfo.cs
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.MvcApplicationPartsAssemblyInfo.cache
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.sourcelink.json
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.dll
+E:\Backend_CuoiKy\obj\Debug\net8.0\refint\Backend_CuoiKy.dll
+E:\Backend_CuoiKy\obj\Debug\net8.0\Backend_CuoiKy.pdb
