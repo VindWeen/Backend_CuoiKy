@@ -1,13 +1,23 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers(); // ⭐ THÊM dòng này để sử dụng Controllers
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//THÊM CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -16,6 +26,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//SỬ DỤNG CORS - Đặt trước UseAuthorization
+app.UseCors("AllowAll");
+
+app.UseAuthorization(); // ⭐ THÊM dòng này
+
+//MAP CONTROLLERS - Thêm dòng này để kích hoạt các Controller
+app.MapControllers();
+
+// Giữ lại code WeatherForecast cũ (không cần thiết nhưng để tạm cũng được)
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -23,7 +42,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
