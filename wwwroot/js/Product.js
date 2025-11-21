@@ -1,57 +1,76 @@
-// Demo data — sau này bạn có thể fetch API backend
-const products = [
-  {
-    name: "Áo thun form rộng",
-    price: "199.000đ",
-    desc: "Chất cotton mềm, thoáng mát.",
-    qty: 12,
-    img: "https://via.placeholder.com/300x200"
-  },
-  {
-    name: "Giày thể thao",
-    price: "890.000đ",
-    desc: "Êm chân, phù hợp chạy bộ.",
-    qty: 0,
-    img: "https://via.placeholder.com/300x200"
-  },
-  {
-    name: "Túi đeo chéo",
-    price: "320.000đ",
-    desc: "Chống nước tốt, tiện lợi.",
-    qty: 7,
-    img: "https://via.placeholder.com/300x200"
-  },
-  {
-    name: "Mũ lưỡi trai",
-    price: "150.000đ",
-    desc: "Phong cách trẻ trung.",
-    qty: 20,
-    img: "https://via.placeholder.com/300x200"
-  }
-];
-
-function renderProducts() {
+// ============= Load sản phẩm từ API =============
+async function loadProducts() {
   const list = document.getElementById("product-list");
-  list.innerHTML = "";
+  list.innerHTML = "<h3>Đang tải sản phẩm...</h3>";
 
-  products.forEach((p, i) => {
-    list.innerHTML += `
-      <div class="card">
-        <img src="${p.img}" alt="${p.name}" />
-        <h3>${p.name}</h3>
-        <div class="price">${p.price}</div>
-        <div class="desc">${p.desc}</div>
-        <div class="stock">Tồn kho: ${p.qty > 0 ? p.qty : "<span style='color:red'>Hết hàng</span>"}</div>
-        <button onclick="addToCart(${i})" ${p.qty === 0 ? "disabled" : ""}>
-          Thêm vào giỏ
-        </button>
-      </div>
-    `;
-  });
+  try {
+    const res = await fetch("http://localhost:5114/api/product");
+
+    if (!res.ok) {
+      list.innerHTML = "<h3>Không thể tải danh sách sản phẩm.</h3>";
+      return;
+    }
+
+    const data = await res.json(); // list sản phẩm từ SQL
+
+    list.innerHTML = "";
+
+    data.forEach(p => {
+      const imageUrl = `http://localhost:5114/Images/${p.id}.jpg`;
+
+      list.innerHTML += `
+        <div class="card">
+          <img src="${imageUrl}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x200';" />
+          
+          <h3>${p.name}</h3>
+
+          <div class="price">${p.price.toLocaleString()} đ</div>
+
+          <div class="desc">${p.description || "Không có mô tả"}</div>
+
+          <div class="stock">
+            Tồn kho: 
+            ${
+              p.stock > 0
+                ? p.stock
+                : "<span style='color:red'>Hết hàng</span>"
+            }
+          </div>
+
+          <button onclick="addToCart(${p.id}, '${p.name}', ${p.price}, '${imageUrl}')" 
+            ${p.stock === 0 ? "disabled" : ""}>
+            Thêm vào giỏ
+          </button>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error("Lỗi tải sản phẩm:", err);
+    list.innerHTML = "<h3>Có lỗi xảy ra khi tải sản phẩm.</h3>";
+  }
 }
 
-function addToCart(i) {
-  alert(`Đã thêm "${products[i].name}" vào giỏ hàng!`);
-}
+loadProducts();
 
-renderProducts();
+// ================== Giỏ hàng ==================
+function addToCart(id, name, price, imageUrl) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const exist = cart.find(x => x.id === id);
+
+  if (exist) {
+    exist.quantity += 1;
+  } else {
+    cart.push({
+      id,
+      name,
+      price,
+      imageUrl,
+      quantity: 1
+    });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert(`Đã thêm "${name}" vào giỏ hàng!`);
+}

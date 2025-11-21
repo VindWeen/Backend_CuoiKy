@@ -72,8 +72,12 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         role: data.role
       }));
 
-      // Chuyển sang trang loading hoặc index
-      window.location.href = 'loadingpage.html';
+      // Chuyển hướng theo role
+      if (data.role === "Admin") {
+        window.location.href = 'ProductManager.html';
+      } else {
+        window.location.href = 'Product.html'; //trang cho customer
+      }
     } else {
       const error = await response.text();
       alert('Sai thông tin đăng nhập: ' + error);
