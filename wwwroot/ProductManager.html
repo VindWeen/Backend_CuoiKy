@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý sản phẩm</title>
+
+  <!-- CSS riêng -->
+  <link rel="stylesheet" href="./css/ProductManager.css" />
+</head>
+<body>
+
+  <h1>Quản lý sản phẩm (Admin)</h1>
+
+  <div class="container">
+    <div class="form-row">
+      <input id="name" placeholder="Tên sản phẩm" />
+      <input id="price" placeholder="Giá" />
+    </div>
+
+    <div class="form-row">
+      <input id="desc" placeholder="Mô tả" />
+      <input id="qty" placeholder="Số lượng" />
+    </div>
+
+    <div class="form-row">
+      <input type="file" id="img" accept="image/*" />
+    </div>
+    
+    <button onclick="addProduct()">Thêm sản phẩm</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ảnh</th>
+          <th>Tên</th>
+          <th>Giá</th>
+          <th>Mô tả</th>
+          <th>Số lượng</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="product-table"></tbody>
+    </table>
+  </div>
+
+  <!-- JS riêng -->
+  <script src="./js/ProductManager.js"></script>
+
+</body>
+</html>
