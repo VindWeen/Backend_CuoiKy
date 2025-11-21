@@ -36,19 +36,19 @@ namespace Backend_CuoiKy.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDTO dto)
         {
-            if (_db.Users.Any(u => u.Username == dto.Username))
+            if (_db.User.Any(u => u.Username == dto.Username))
                 return BadRequest("Username already exists");
 
             string hash = HashPassword(dto.Password);
 
-            var user = new Users
+            var user = new User
             {
                 Username = dto.Username,
                 Password = hash,
                 Role = dto.Role
             };
 
-            _db.Users.Add(user);
+            _db.User.Add(user);
             _db.SaveChanges();
 
             return Ok("Đăng ký thành công.");
@@ -59,7 +59,7 @@ namespace Backend_CuoiKy.Controllers
         {
             string hash = HashPassword(dto.Password);
 
-            var user = _db.Users.FirstOrDefault(u => 
+            var user = _db.User.FirstOrDefault(u => 
                 u.Username == dto.Username 
                 && u.Password == hash);
 
@@ -71,7 +71,7 @@ namespace Backend_CuoiKy.Controllers
             return Ok(new { Message = "Đăng nhập thành công", userID = user.Id, Role = user.Role, Token = token });
         }
         // Hàm tạo JWT
-        private string GenerateJwtToken(Users user)
+        private string GenerateJwtToken(User user)
         {
             var claims = new[]
             {
