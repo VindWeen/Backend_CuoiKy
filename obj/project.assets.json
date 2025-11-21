@@ -2513,23 +2513,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\DNCO\\.nuget\\packages\\": {},
-    "D:\\Studio 2022\\NuGetPackages": {}
+    "C:\\Users\\fw622\\.nuget\\packages\\": {},
+    "D:\\Visual Studio 2022\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Backend\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+      "projectUniqueName": "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
       "projectName": "Backend_CuoiKy",
-      "projectPath": "D:\\Backend\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
-      "packagesPath": "C:\\Users\\DNCO\\.nuget\\packages\\",
-      "outputPath": "D:\\Backend\\Backend_CuoiKy\\obj\\",
+      "projectPath": "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+      "packagesPath": "C:\\Users\\fw622\\.nuget\\packages\\",
+      "outputPath": "D:\\Download\\Backend_CuoiKy\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "D:\\Studio 2022\\NuGetPackages"
+        "D:\\Visual Studio 2022\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\DNCO\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\fw622\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

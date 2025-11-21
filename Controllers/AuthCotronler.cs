@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using Backend_Cuoiky.DTOs;
-using Backend_Cuoiky.Models;
+using Backend_CuoiKy.DTOs;
+using Backend_CuoiKy.Models;
+using Backend_CuoiKy.Data;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Backend_Cuoiky.Controllers
+namespace Backend_CuoiKy.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDBcontext _db;
+        private readonly AppDbContext _db;
 
-        public AuthController(AppDBcontext db)
+        public AuthController(AppDbContext db)
         {
             _db = db;
         }
-         // Hàm hash mật khẩu
+
+        // Hàm hash mật khẩu
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();
@@ -28,12 +30,11 @@ namespace Backend_Cuoiky.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDTO dto)
         {
-            // Check username tồn tại
             if (_db.Users.Any(u => u.Username == dto.Username))
                 return BadRequest("Username already exists");
 
-            // Mã hóa mật khẩu
             string hash = HashPassword(dto.Password);
+
             var user = new Users
             {
                 Username = dto.Username,
@@ -46,11 +47,16 @@ namespace Backend_Cuoiky.Controllers
 
             return Ok("Đăng ký thành công.");
         }
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDTO dto)
         {
             string hash = HashPassword(dto.Password);
-            var user = _db.Users.FirstOrDefault(u => u.Username == dto.Username && u.Password == hash);
+
+            var user = _db.Users.FirstOrDefault(u => 
+                u.Username == dto.Username 
+                && u.Password == hash);
+
             if (user == null)
                 return Unauthorized("Tên đăng nhập hoặc mật khẩu không đúng.");
 
