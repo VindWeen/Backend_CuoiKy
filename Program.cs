@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,26 @@ var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    // Thêm nút Authorize
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        In = ParameterLocation.Header,
+        Description = "Nhập 'Bearer {token}'"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
+            Array.Empty<string>()
+        }
+    });
+});
+
 builder.Services.AddControllers();
 // Cấu hình Authentication với JWT Bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
