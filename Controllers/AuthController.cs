@@ -11,10 +11,10 @@ namespace Backend_CuoiKy.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDBcontext _db;
+        private readonly AppDbContext _db;
         private readonly IConfiguration _config;
 
-        public AuthController(AppDBcontext db, IConfiguration config)
+        public AuthController(AppDbContext db, IConfiguration config)
         {
             _db = db;
             _config = config;

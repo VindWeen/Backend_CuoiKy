@@ -11,5 +11,7 @@ namespace Backend_CuoiKy.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Users> Users { get; set; }
+        public DbSet<Customer> Customer { get; set; }
+
     }
 }
