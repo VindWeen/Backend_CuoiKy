@@ -1,0 +1,6 @@
+@Backend_CuoiKy_HostAddress = http://localhost:5114
+
+GET {{Backend_CuoiKy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
