@@ -1,8 +1,8 @@
+using Backend_CuoiKy.Data;
 using Backend_CuoiKy.Models;
-using Backend_CuoiKy.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend_CuoiKy.Controllers
 {
@@ -11,18 +11,18 @@ namespace Backend_CuoiKy.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductService _service;
+        private readonly AppDbContext _db;
 
-        public ProductController(IProductService service)
+        public ProductController(AppDbContext db)
         {
-            _service = service;
+            _db = db;
         }
 
         // GET api/product
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _service.GetAllAsync();
+            var list = await _db.Product.ToListAsync();
             return Ok(list);
         }
 
@@ -30,7 +30,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = await _service.GetByIdAsync(id);
+            var product = await _db.Product.FindAsync(id);
             if (product == null)
                 return NotFound();
 
@@ -42,8 +42,10 @@ namespace Backend_CuoiKy.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
-            var newP = await _service.AddAsync(product);
-            return CreatedAtAction(nameof(GetById), new { id = newP.Id }, newP);
+            _db.Product.Add(product);
+            await _db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
 
         // PUT api/product/5
@@ -51,11 +53,17 @@ namespace Backend_CuoiKy.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Product product)
         {
-            var updated = await _service.UpdateAsync(id, product);
-            if (updated == null)
+            var existing = await _db.Product.FindAsync(id);
+            if (existing == null)
                 return NotFound();
 
-            return Ok(updated);
+            existing.Name = product.Name;
+            existing.Price = product.Price;
+            existing.Description = product.Description;
+            existing.Stock = product.Stock;
+
+            await _db.SaveChangesAsync();
+            return Ok(existing);
         }
 
         // DELETE api/product/5
@@ -63,9 +71,12 @@ namespace Backend_CuoiKy.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            var product = await _db.Product.FindAsync(id);
+            if (product == null)
                 return NotFound();
+
+            _db.Product.Remove(product);
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
