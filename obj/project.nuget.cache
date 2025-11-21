@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sHsXBnKH1II=",
+  "dgSpecHash": "kGD3XZwXxfs=",
   "success": true,
-  "projectFilePath": "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+  "projectFilePath": "d:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fw622\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\fw622\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.20\\microsoft.aspnetcore.openapi.8.0.20.nupkg.sha512",
