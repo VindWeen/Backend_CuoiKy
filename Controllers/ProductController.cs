@@ -1,9 +1,12 @@
 using Backend_CuoiKy.Models;
 using Backend_CuoiKy.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Backend_CuoiKy.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -35,6 +38,7 @@ namespace Backend_CuoiKy.Controllers
         }
 
         // POST api/product
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
@@ -43,6 +47,7 @@ namespace Backend_CuoiKy.Controllers
         }
 
         // PUT api/product/5
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Product product)
         {
@@ -54,6 +59,7 @@ namespace Backend_CuoiKy.Controllers
         }
 
         // DELETE api/product/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

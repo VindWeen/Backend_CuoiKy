@@ -20,7 +20,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _context.Customer.ToListAsync();
+            var data = await _context.Customers.ToListAsync();
             return Ok(data);
         }
 
@@ -28,7 +28,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var customer = await _context.Customer.FindAsync(id);
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return NotFound();
 
             return Ok(customer);
@@ -40,7 +40,7 @@ namespace Backend_CuoiKy.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            _context.Customer.Add(model);
+            _context.Customers.Add(model);
             await _context.SaveChangesAsync();
 
             return Ok(model);
@@ -50,12 +50,12 @@ namespace Backend_CuoiKy.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Customer model)
         {
-            var customer = await _context.Customer.FindAsync(id);
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return NotFound();
 
             customer.Name = model.Name;
             customer.Email = model.Email;
-            customer.Phone_Number = model.Phone_Number;
+            customer.PhoneNumber = model.PhoneNumber;
             customer.Address = model.Address;
 
             await _context.SaveChangesAsync();
@@ -66,10 +66,10 @@ namespace Backend_CuoiKy.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _context.Customer.FindAsync(id);
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return NotFound();
 
-            _context.Customer.Remove(customer);
+            _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Deleted successfully" });

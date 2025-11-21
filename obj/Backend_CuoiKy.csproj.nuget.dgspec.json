@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {}
+    "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {}
   },
   "projects": {
-    "d:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {
+    "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+        "projectUniqueName": "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
         "projectName": "Backend_CuoiKy",
-        "projectPath": "d:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+        "projectPath": "D:\\Download\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
         "packagesPath": "C:\\Users\\fw622\\.nuget\\packages\\",
-        "outputPath": "d:\\Download\\Backend_CuoiKy\\obj\\",
+        "outputPath": "D:\\Download\\Backend_CuoiKy\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Visual Studio 2022\\NuGetPackages"
