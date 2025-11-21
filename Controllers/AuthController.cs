@@ -4,6 +4,10 @@ using Backend_CuoiKy.Models;
 using Backend_CuoiKy.Data;
 using System.Security.Cryptography;
 using System.Text;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+
 
 namespace Backend_CuoiKy.Controllers
 {

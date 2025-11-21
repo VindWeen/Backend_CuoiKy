@@ -1,5 +1,5 @@
 using Backend_CuoiKy.Data;
-using Backend_CuoiKy.Data.Models;
+using Backend_CuoiKy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
