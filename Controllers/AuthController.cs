@@ -11,11 +11,13 @@ namespace Backend_CuoiKy.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly AppDBcontext _db;
+        private readonly IConfiguration _config;
 
-        public AuthController(AppDbContext db)
+        public AuthController(AppDBcontext db, IConfiguration config)
         {
             _db = db;
+            _config = config;
         }
 
         // Hàm hash mật khẩu
@@ -26,7 +28,7 @@ namespace Backend_CuoiKy.Controllers
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
-
+        // Đăng ký người dùng
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDTO dto)
         {
@@ -60,7 +62,31 @@ namespace Backend_CuoiKy.Controllers
             if (user == null)
                 return Unauthorized("Tên đăng nhập hoặc mật khẩu không đúng.");
 
-            return Ok(new { Message = "Đăng nhập thành công", Role = user.Role });
+            string token = GenerateJwtToken(user);
+
+            return Ok(new { Message = "Đăng nhập thành công", userID = user.Id, Role = user.Role, Token = token });
+        }
+        // Hàm tạo JWT
+        private string GenerateJwtToken(Users user)
+        {
+            var claims = new[]
+            {
+                new Claim("userId", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(3),
+                signingCredentials: cred
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
