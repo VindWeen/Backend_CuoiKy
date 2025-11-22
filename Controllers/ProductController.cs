@@ -1,28 +1,28 @@
+using Backend_CuoiKy.Data;
 using Backend_CuoiKy.Models;
-using Backend_CuoiKy.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend_CuoiKy.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductService _service;
+        private readonly AppDbContext _db;
 
-        public ProductController(IProductService service)
+        public ProductController(AppDbContext db)
         {
-            _service = service;
+            _db = db;
         }
 
         // GET api/product
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _service.GetAllAsync();
+            var list = await _db.Product.ToListAsync();
             return Ok(list);
         }
 
@@ -30,7 +30,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = await _service.GetByIdAsync(id);
+            var product = await _db.Product.FindAsync(id);
             if (product == null)
                 return NotFound();
 
@@ -40,34 +40,84 @@ namespace Backend_CuoiKy.Controllers
         // POST api/product
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Create([FromForm] Product product, IFormFile? file)
         {
-            var newP = await _service.AddAsync(product);
-            return CreatedAtAction(nameof(GetById), new { id = newP.Id }, newP);
+            _db.Product.Add(product);
+            await _db.SaveChangesAsync(); // ID tự sinh ra
+
+            if (file != null && file.Length > 0)
+            {
+                var savePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{product.Id}.jpg");
+                using var stream = new FileStream(savePath, FileMode.Create);
+                await file.CopyToAsync(stream);
+            }
+
+            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
 
         // PUT api/product/5
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Product product)
+        public async Task<IActionResult> Update(int id, [FromForm] Product product, IFormFile? file)
         {
-            var updated = await _service.UpdateAsync(id, product);
-            if (updated == null)
-                return NotFound();
+            var existing = await _db.Product.FindAsync(id);
+            if (existing == null) return NotFound();
 
-            return Ok(updated);
+            existing.Name = product.Name;
+            existing.Price = product.Price;
+            existing.Description = product.Description;
+            existing.Stock = product.Stock;
+
+            await _db.SaveChangesAsync();
+
+            if (file != null && file.Length > 0)
+            {
+                var savePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{id}.jpg");
+                using var stream = new FileStream(savePath, FileMode.Create);
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok(existing);
         }
+
 
         // DELETE api/product/5
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
-                return NotFound();
+            var product = await _db.Product.FindAsync(id);
+            if (product == null) return NotFound();
+
+            _db.Product.Remove(product);
+            await _db.SaveChangesAsync();
+
+            // Xóa file ảnh nếu tồn tại
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{id}.jpg");
+            if (System.IO.File.Exists(filePath)) System.IO.File.Delete(filePath);
 
             return NoContent();
         }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("upload/{id}")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file)
+        {
+            var product = await _db.Product.FindAsync(id);
+            if (product == null) return NotFound();
+
+            if (file == null || file.Length == 0)
+                return BadRequest("File không hợp lệ");
+
+            var savePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{id}.jpg");
+            using var stream = new FileStream(savePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return Ok(new { message = "Upload thành công" });
+        }
+
+
+
     }
 }

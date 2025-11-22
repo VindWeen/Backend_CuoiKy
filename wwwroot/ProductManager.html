@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProductManager - Quản lý sản phẩm quần áo</title>
+  <link rel="stylesheet" href="./css/ProductManager.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Quản lý sản phẩm</h1>
+
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tên sản phẩm</label>
+          <input type="text" id="name" placeholder="VD: Áo thun cotton premium"/>
+        </div>
+        <div class="form-group">
+          <label>Giá tiền (VNĐ)</label>
+          <input type="number" id="price" placeholder="299000"/>
+        </div>
+        <div class="form-group">
+          <label>Số lượng</label>
+          <input type="number" id="quantity" placeholder="50"/>
+        </div>
+        <div class="form-group">
+          <label>Ảnh sản phẩm</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="image" accept="image/*"/>
+            <label for="image" class="file-input-label">
+              Chọn ảnh sản phẩm
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mô tả sản phẩm</label>
+        <textarea id="description" placeholder="Mô tả chi tiết về chất liệu, form dáng, màu sắc..."></textarea>
+      </div>
+
+      <div class="btn-container">
+        <button class="btn btn-primary" id="addBtn">
+          Thêm sản phẩm
+        </button>
+      </div>
+    </div>
+
+    <table id="productTable">
+      <thead>
+        <tr>
+          <th>Ảnh</th>
+          <th>Tên sản phẩm</th>
+          <th>Giá</th>
+          <th>Mô tả</th>
+          <th>Số lượng</th>
+          <th>Chức năng</th>
+        </tr>
+      </thead>
+      <tbody id="productList">
+        <!-- Danh sách sản phẩm sẽ được thêm bằng JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="./js/ProductManager.js"></script>
+</body>
+</html>
