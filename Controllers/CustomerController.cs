@@ -20,7 +20,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _context.Customers.ToListAsync();
+            var data = await _context.Customer.ToListAsync();
             return Ok(data);
         }
 
@@ -28,7 +28,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _context.Customer.FindAsync(id);
             if (customer == null) return NotFound();
 
             return Ok(customer);
@@ -40,7 +40,7 @@ namespace Backend_CuoiKy.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            _context.Customers.Add(model);
+            _context.Customer.Add(model);
             await _context.SaveChangesAsync();
 
             return Ok(model);
@@ -50,7 +50,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Customer model)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _context.Customer.FindAsync(id);
             if (customer == null) return NotFound();
 
             customer.Name = model.Name;
@@ -66,10 +66,10 @@ namespace Backend_CuoiKy.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _context.Customer.FindAsync(id);
             if (customer == null) return NotFound();
 
-            _context.Customers.Remove(customer);
+            _context.Customer.Remove(customer);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Deleted successfully" });

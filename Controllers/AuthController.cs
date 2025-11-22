@@ -37,7 +37,7 @@ namespace Backend_CuoiKy.Controllers
         public IActionResult Register([FromBody] RegisterDTO dto)
         {
             if (_db.User.Any(u => u.Username == dto.Username))
-                return BadRequest("Username already exists");
+                return BadRequest("Tài khoản đã tồn tại.");
 
             string hash = HashPassword(dto.Password);
 
@@ -68,20 +68,21 @@ namespace Backend_CuoiKy.Controllers
 
             string token = GenerateJwtToken(user);
 
+            // Trả về token cùng thông tin người dùng
             return Ok(new { Message = "Đăng nhập thành công", userID = user.Id, Role = user.Role, Token = token });
         }
         // Hàm tạo JWT
         private string GenerateJwtToken(User user)
         {
+            // Tạo các claim cho token
             var claims = new[]
             {
                 new Claim("userId", user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role)
             };
-
+            // Tạo khóa bảo mật và chữ ký
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
