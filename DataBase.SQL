@@ -58,13 +58,13 @@ create table [dbo].[User]
     role nvarchar(50) check (role in ('admin', 'customer'))
 )
 -- Reset identity cho bảng Product
-DBCC CHECKIDENT ('Product', RESEED, 0);
+DBCC CHECKIDENT ('Product', RESEED, 1);
 
 -- Reset identity cho bảng Customer
-DBCC CHECKIDENT ('Customer', RESEED, 0);
+DBCC CHECKIDENT ('Customer', RESEED, 1);
 
 -- Reset identity cho bảng Order
-DBCC CHECKIDENT ('Order', RESEED, 0);
+DBCC CHECKIDENT ('Order', RESEED, 1);
 
 -- Reset identity cho bảng User
-DBCC CHECKIDENT ('User', RESEED, 0);
+DBCC CHECKIDENT ('User', RESEED, 1);
