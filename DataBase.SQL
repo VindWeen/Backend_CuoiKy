@@ -31,21 +31,21 @@ create table [dbo].[Customer]
 go
 create table [dbo].[Order]
 (
-    id int primary key identity(1,1),
-    customer_id int foreign key (customer_id) references [dbo].[Customer] (id),
-    order_date date not null,
-    status nvarchar(50),
-    total_amount decimal(18,2) check (total_amount >= 0)
+    Id int primary key identity(1,1),
+    CustomerId int foreign key (CustomerId) references [dbo].[Customer] (id),
+    OrderDate date not null,
+    Status nvarchar(50),
+    TotalAmount decimal(18,2) check (TotalAmount >= 0)
 )
 --Bảng OrderDetail
 go
 create table [dbo].[OrderDetail]
 (
-    order_id int foreign key (order_id) references [dbo].[Order] (id),
-    product_id int foreign key (product_id) references [dbo].[Product] (id),
-    quantity int check (quantity > 0),
-    unit_price decimal(18,2) check (unit_price >= 0),
-    primary key (order_id, product_id)
+    OrderId int foreign key (OrderId) references [dbo].[Order] (Id),
+    ProductId int foreign key (ProductId) references [dbo].[Product] (Id),
+    Quantity int check (Quantity > 0),
+    UnitPrice decimal(18,2) check (UnitPrice >= 0),
+    primary key (OrderId, ProductId)
 )
 
 --Bảng User
@@ -57,3 +57,14 @@ create table [dbo].[User]
     password nvarchar(100) not null,
     role nvarchar(50) check (role in ('admin', 'customer'))
 )
+-- Reset identity cho bảng Product
+DBCC CHECKIDENT ('Product', RESEED, 0);
+
+-- Reset identity cho bảng Customer
+DBCC CHECKIDENT ('Customer', RESEED, 0);
+
+-- Reset identity cho bảng Order
+DBCC CHECKIDENT ('Order', RESEED, 0);
+
+-- Reset identity cho bảng User
+DBCC CHECKIDENT ('User', RESEED, 0);
