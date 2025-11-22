@@ -9,10 +9,10 @@ namespace Backend_CuoiKy.Data
         {
         }
 
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Product> Product { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderDetail> OrderDetail { get; set; }
+        public DbSet<Customer> Customer { get; set; }
         public DbSet<User> User { get; set; }
     }
 }
