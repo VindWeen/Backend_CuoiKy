@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {}
+    "d:\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {}
   },
   "projects": {
-    "E:\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {
+    "d:\\Backend_CuoiKy\\Backend_CuoiKy.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+        "projectUniqueName": "d:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
         "projectName": "Backend_CuoiKy",
-        "projectPath": "E:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
-        "packagesPath": "C:\\Users\\Nhac Phuoc\\.nuget\\packages\\",
-        "outputPath": "E:\\Backend_CuoiKy\\obj\\",
+        "projectPath": "d:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+        "packagesPath": "C:\\Users\\fw622\\.nuget\\packages\\",
+        "outputPath": "d:\\Backend_CuoiKy\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "D:\\Visual Studio 2022\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Nhac Phuoc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\fw622\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -75,6 +75,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.15.0, )"
             }
           },
           "imports": [
@@ -96,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
