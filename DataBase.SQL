@@ -24,28 +24,38 @@ create table [dbo].[Customer]
     id int primary key identity(1,1),
     name nvarchar(100) not null,
     email nvarchar(100),
-    phone_number nvarchar(15),
+    phonenumber nvarchar(15),
     address nvarchar(200)
 )
+
+-- Thêm cột UserId vào bảng Customer
+ALTER TABLE [dbo].[Customer] ADD userid INT NULL;
+-- Tạo ràng buộc: 1 User chỉ có tối đa 1 Customer
+ALTER TABLE [dbo].[Customer] 
+ADD CONSTRAINT FK_Customer_User FOREIGN KEY (userid) REFERENCES [dbo].[User](id);
+-- (Tùy chọn) Đảm bảo không có 2 Customer cùng UserId
+ALTER TABLE [dbo].[Customer] 
+ADD CONSTRAINT UQ_Customer_UserId UNIQUE (userid);
+
 --Bảng Order
 go
 create table [dbo].[Order]
 (
-    id int primary key identity(1,1),
-    customer_id int foreign key (customer_id) references [dbo].[Customer] (id),
-    order_date date not null,
-    status nvarchar(50),
-    total_amount decimal(18,2) check (total_amount >= 0)
+    Id int primary key identity(1,1),
+    CustomerId int foreign key (CustomerId) references [dbo].[Customer] (id),
+    OrderDate date not null,
+    Status nvarchar(50),
+    TotalAmount decimal(18,2) check (TotalAmount >= 0)
 )
 --Bảng OrderDetail
 go
 create table [dbo].[OrderDetail]
 (
-    order_id int foreign key (order_id) references [dbo].[Order] (id),
-    product_id int foreign key (product_id) references [dbo].[Product] (id),
-    quantity int check (quantity > 0),
-    unit_price decimal(18,2) check (unit_price >= 0),
-    primary key (order_id, product_id)
+    OrderId int foreign key (OrderId) references [dbo].[Order] (Id),
+    ProductId int foreign key (ProductId) references [dbo].[Product] (Id),
+    Quantity int check (Quantity > 0),
+    UnitPrice decimal(18,2) check (UnitPrice >= 0),
+    primary key (OrderId, ProductId)
 )
 
 --Bảng User
@@ -57,3 +67,15 @@ create table [dbo].[User]
     password nvarchar(100) not null,
     role nvarchar(50) check (role in ('admin', 'customer'))
 )
+-- Reset identity cho bảng Product
+DBCC CHECKIDENT ('Product', RESEED, 0);
+
+-- Reset identity cho bảng Customer
+DBCC CHECKIDENT ('Customer', RESEED, 0);
+
+-- Reset identity cho bảng Order
+DBCC CHECKIDENT ('Order', RESEED, 0);
+
+-- Reset identity cho bảng User
+DBCC CHECKIDENT ('User', RESEED, 0);
+
