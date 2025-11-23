@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Giỏ hàng của bạn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/Cart.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="title">Giỏ hàng của bạn</h1>
+
+    <div class="cart-wrapper">
+      <!-- Danh sách sản phẩm -->
+      <div class="cart-items" id="cartItems">
+        <!-- JS sẽ render ở đây -->
+      </div>
+
+      <!-- Checkout box -->
+      <div class="checkout-box">
+        <h2>Thông tin thanh toán</h2>
+        <div class="info-grid">
+          <div class="info-item"><label>Họ tên</label><input type="text" id="fullName" placeholder="Nguyễn Văn A" /></div>
+          <div class="info-item"><label>Số điện thoại</label><input type="text" id="phone" placeholder="0901234567" /></div>
+          <div class="info-item"><label>Email</label><input type="email" id="email" placeholder="you@example.com" /></div>
+          <div class="info-item full"><label>Địa chỉ giao hàng</label><input type="text" id="address" placeholder="Số nhà, đường, phường/xã..." /></div>
+        </div>
+
+        <div class="summary">
+          <div class="summary-row"><span>Tạm tính</span><strong id="subtotal">0 ₫</strong></div>
+          <div class="summary-row"><span>Phí vận chuyển</span><strong>30.000 ₫</strong></div>
+          <div class="summary-row total"><span>Tổng cộng</span><strong id="total">0 ₫</strong></div>
+        </div>
+
+        <button class="btn-pay" id="payBtn" disabled>Thanh toán ngay</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/Cart.js"></script>
+</body>
+</html>

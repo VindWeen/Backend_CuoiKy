@@ -23,7 +23,7 @@ namespace Backend_CuoiKy.Data
             // Optional: cấu hình quan hệ
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Order)
-                .WithMany()
+                .WithMany(o => o.OrderDetails)
                 .HasForeignKey(od => od.OrderId);
 
             modelBuilder.Entity<OrderDetail>()

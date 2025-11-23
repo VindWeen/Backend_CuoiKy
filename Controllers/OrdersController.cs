@@ -71,7 +71,7 @@ namespace Backend_CuoiKy.Controllers
             if (order == null) return NotFound();
 
             // Kiểm tra quyền truy cập
-            if (userRole != "Admin" && order.CustomerId!= userId)
+            if (userRole != "Admin" && order.CustomerId != userId)
                 return Forbid("Bạn không có quyền xem đơn hàng này.");
 
             // Lấy chi tiết đơn hàng
@@ -103,67 +103,65 @@ namespace Backend_CuoiKy.Controllers
         [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO dto)
         {
-            // Kiểm tra giỏ hàng không rỗng
             if (dto.Items == null || dto.Items.Count == 0)
                 return BadRequest("Giỏ hàng trống.");
 
-            // Lấy userId từ token
-            var customerId = GetUserIdFromToken();
-            if (customerId == null) return Unauthorized();
+            if (dto.CustomerId <= 0)
+                return BadRequest("Thiếu CustomerId.");
 
-            // Sử dụng transaction để đảm bảo tính toàn vẹn dữ liệu
+            var customer = await _context.Customer.FindAsync(dto.CustomerId);
+            if (customer == null)
+                return BadRequest("Customer không tồn tại.");
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 int total = 0;
 
+                // 1) Tạo đơn hàng trước
                 var order = new Order
                 {
-                    CustomerId = customerId.Value,
+                    CustomerId = dto.CustomerId,
                     OrderDate = DateTime.Now,
                     Status = "Pending",
                     TotalAmount = 0
                 };
 
                 _context.Order.Add(order);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();  // ⭐ cần để có order.Id
 
+                // 2) Tạo danh sách chi tiết
                 foreach (var item in dto.Items)
                 {
-                    // Kiểm tra sản phẩm và tồn kho
                     var product = await _context.Product
                         .FirstOrDefaultAsync(p => p.Id == item.ProductId);
 
-                    // Nếu không tìm thấy sản phẩm
                     if (product == null)
                         return BadRequest($"Không tìm thấy sản phẩm ID = {item.ProductId}");
 
-                    // Nếu không đủ tồn kho
                     if (product.Stock < item.Quantity)
                         return BadRequest($"Sản phẩm {product.Name} không đủ tồn kho.");
 
-                    // Cập nhật tồn kho
+                    // Trừ tồn kho
                     product.Stock -= item.Quantity;
 
-                    // Tạo chi tiết đơn hàng
                     var detail = new OrderDetail
                     {
-                        OrderId = order.Id,
-                        ProductId = product.Id,
+                        OrderId = order.Id,         // ⭐ phải gán trực tiếp FK
+                        ProductId = product.Id,     // ⭐ phải gán trực tiếp FK
                         Quantity = item.Quantity,
-                        UnitPrice = product.Price
+                        UnitPrice = product.Price,
+                        Product = product   // ★ gán navigation
                     };
-                    // Thêm chi tiết đơn hàng
+
                     _context.OrderDetail.Add(detail);
 
-                    // Cập nhật tổng tiền
                     total += (int)(product.Price * item.Quantity);
                 }
-                // Cập nhật tổng tiền đơn hàng
-                order.TotalAmount = total;
 
-                // Lưu thay đổi
+                // Cập nhật tổng giá
+                order.TotalAmount = total + 30000;
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -171,11 +169,11 @@ namespace Backend_CuoiKy.Controllers
             }
             catch (Exception ex)
             {
-                // Nếu có lỗi, rollback transaction
                 await transaction.RollbackAsync();
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+
 
         // Lấy đơn hàng của người dùng hiện tại
         [HttpGet("my-orders")]
@@ -223,9 +221,8 @@ namespace Backend_CuoiKy.Controllers
         // Lấy userId từ token
         private int? GetUserIdFromToken()
         {
-            // Lấy userId từ token
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (int.TryParse(id, out int userId))
+            var idClaim = User.FindFirst("userId")?.Value;
+            if (int.TryParse(idClaim, out int userId))
                 return userId;
 
             return null;

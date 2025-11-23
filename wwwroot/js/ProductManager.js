@@ -2,6 +2,45 @@ const API = "http://localhost:5114/api/product";
 let products = [];
 let editId = null;
 
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px;
+        z-index: 9999; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ============ BẢO VỆ TRANG ADMIN – PHIÊN BẢN HOÀN HẢO ============
+(function checkAdminAccess() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const token = localStorage.getItem('token');
+
+    if (!token || !user || user.role !== 'Admin') {
+        // Xóa hết nội dung trang ngay lập tức
+        document.body.innerHTML = `
+            <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;font-family:sans-serif;">
+                <h2 style="color:#ef4444;">
+                    ${!token || !user ? 'Bạn cần đăng nhập!' : 'Bạn không có quyền truy cập trang này!'}
+                </h2>
+                <p>Đang chuyển hướng...</p>
+            </div>
+        `;
+
+        setTimeout(() => {
+            window.location.href = (!token || !user) ? 'LogReg.html' : 'Product.html';
+        }, 1500);
+
+        // DỪNG HOÀN TOÀN việc thực thi JS phía dưới
+        throw new Error('Stop script execution');
+    }
+
+    console.log('Chào Admin:', user.role);
+})();
+
 // Load danh sách sản phẩm khi mở trang
 async function loadProducts() {
   try {
