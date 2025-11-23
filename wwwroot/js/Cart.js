@@ -194,6 +194,9 @@ async function createRealOrder() {
         if (res.ok) {
             const result = await res.json();
             alert(`Đặt hàng thành công! Mã đơn: ${result.orderId || result.id}`);
+            const newOrderId = result.orderId || result.id;
+            localStorage.setItem("selectedOrderId", newOrderId);
+            window.location.href = "OrderDetail.html";
             cart = cart.filter(i => !i.checked); // xóa các món đã đặt
             saveCart();
             renderCart();

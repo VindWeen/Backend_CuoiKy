@@ -63,6 +63,7 @@ namespace Backend_CuoiKy.Controllers
         {
             // Lấy userId và role từ token
             var userId = GetUserIdFromToken();
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             // Tìm đơn hàng
@@ -71,7 +72,7 @@ namespace Backend_CuoiKy.Controllers
             if (order == null) return NotFound();
 
             // Kiểm tra quyền truy cập
-            if (userRole != "Admin" && order.CustomerId != userId)
+            if (userRole != "Admin" && order.CustomerId != customer.Id)
                 return Forbid("Bạn không có quyền xem đơn hàng này.");
 
             // Lấy chi tiết đơn hàng
@@ -123,12 +124,12 @@ namespace Backend_CuoiKy.Controllers
                 {
                     CustomerId = dto.CustomerId,
                     OrderDate = DateTime.Now,
-                    Status = "Pending",
+                    Status = "Đã xử lí",
                     TotalAmount = 0
                 };
 
                 _context.Order.Add(order);
-                await _context.SaveChangesAsync();  // ⭐ cần để có order.Id
+                await _context.SaveChangesAsync();
 
                 // 2) Tạo danh sách chi tiết
                 foreach (var item in dto.Items)

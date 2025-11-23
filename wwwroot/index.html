@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shop Thời Trang Cao Cấp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+
+  <!-- Banner chính đầu trang -->
+  <section class="hero-full">
+    <img src="./Img/banner1.jpg" alt="Banner chính">
+  </section>
+
+  <!-- Sản phẩm 1 + Banner nhỏ xen kẽ -->
+  <section class="highlight-section">
+    <div class="product-highlight alt">
+      <div class="product-image slider">
+        <img src="./Img/AKNu1.jpg" alt="Ảnh 1" class="slide active">
+        <img src="./Img/AKNu2.jpg" alt="Ảnh 2" class="slide">
+        <img src="./Img/AKNu3.jpg" alt="Ảnh 3" class="slide">
+      </div>
+      <div class="product-info">
+        <h2>Áo Khoác Dù Nữ Trượt Nước<br><span>Signal Logo WOP 2087</span></h2>
+        <p class="desc">Chất liệu polyester 135 GSM 3 lớp chống thấm nước hoàn toàn, logo phản quang, túi khóa kéo, form regular mix relax – item phải có cho mùa mưa!</p>
+        <div class="specs">
+          <p>Chất liệu: 100% Polyester | Màu: Đen, Xám, Hồng Dusty Rose</p>
+          <p>Sản xuất tại Việt Nam</p>
+        </div>
+        <div class="price">790.000 ₫</div>
+        <button class="btn-view">Xem chi tiết</button>
+      </div>
+    </div>
+
+    <!-- Banner xen kẽ 1 -->
+    <div class="interlude-banner">
+      <img src="./Img/banner2.jpg" alt="Banner khuyến mãi 1">
+    </div>
+  </section>
+
+  <!-- Sản phẩm 2 (ngược chiều) -->
+  <section class="highlight-section reverse-bg">
+    <div class="product-highlight reverse">
+      <div class="product-image slider">
+        <img src="./Img/HoodieNam1.jpg" alt="Ảnh 1" class="slide active">
+        <img src="./Img/HoodieNam2.jpg" alt="Ảnh 2" class="slide">
+        <!-- <img src="https://via.placeholder.com/700x1000/4c1d95/ffffff?text=Ảnh+3+Oversize+Tee" alt="Ảnh 3" class="slide"> -->
+      </div>
+      <div class="product-info">
+        <h2>Áo Hoodie Nam<br><span>Double Face Full-Zip Hood MHO 1026</span></h2>
+        <p class="desc">Áo Hoodie Double Face Full-Zip Hood MHO 1026 được làm từ chất liệu thun double face 60% Cotton – 40% Polyester, 320gsm, mang lại sự thoải mái nhưng vẫn đứng form.</p>
+        <div class="specs">
+          <p>Chất liệu: Thun Double Face 60% Cotton + 40% Poly 320GSM | Form dáng: Relax - Lai suôn | Màu sắc: Đen, Xám Đậm</p>
+        </div>
+        <div class="price">629.000 ₫</div>
+        <button class="btn-view">Xem chi tiết</button>
+      </div>
+    </div>
+
+    <!-- Banner xen kẽ 2 -->
+    <div class="interlude-banner">
+      <img src="./Img/banner3.jpg" alt="Banner khuyến mãi 2">
+    </div>
+  </section>
+
+  <!-- Sản phẩm 3 -->
+  <section class="highlight-section">
+    <div class="product-highlight alt">
+      <div class="product-image slider">
+        <img src="./Img/AoThun1.jpg" alt="Ảnh 1" class="slide active">
+        <img src="./Img/AoThun2.jpg" alt="Ảnh 2" class="slide">
+        <!-- <img src="https://via.placeholder.com/700x1000/0e7490/ffffff?text=Ảnh+3+Jogger+Pro" alt="Ảnh 3" class="slide"> -->
+      </div>
+      <div class="product-info">
+        <h2>Áo Thun<br><span>Typo To Be Kind</span></h2>
+        <p class="desc">Áo Thun Typo To Be Kind. Chiếc áo thun sử dụng vải CD 100% cotton, dệt single 2C, định lượng 190gsm, áo mang đến cảm giác mềm mại, thoáng mát, thích hợp mặc cả ngày dài trong nhiều hoạt động.</p>
+        <div class="specs">
+          <p>Chất liệu: Thun 100% cotton 190gsm | Form dáng: Relax | Màu sắc: Trắng, Xanh Sky Way</p>
+        </div>
+        <div class="price">299.000 - 329.000 ₫</div>
+        <button class="btn-view">Xem chi tiết</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Tự động trượt ảnh mỗi 1 giây khi hover (hoặc luôn chạy)
+    document.querySelectorAll('.slider').forEach(slider => {
+      const slides = slider.querySelectorAll('.slide');
+      let current = 0;
+
+      const startSlide = () => {
+        setInterval(() => {
+          slides[current].classList.remove('active');
+          current = (current + 1) % slides.length;
+          slides[current].classList.add('active');
+        }, 1000); // 1 giây đổi 1 ảnh
+      };
+
+      // Bắt đầu trượt khi hover vào
+      slider.parentElement.addEventListener('mouseenter', () => {
+        if (!slider.interval) {
+          slider.interval = setInterval(() => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+          }, 1000);
+        }
+      });
+
+      // Dừng và quay về ảnh đầu khi rời chuột
+      slider.parentElement.addEventListener('mouseleave', () => {
+        clearInterval(slider.interval);
+        slider.interval = null;
+        slides.forEach((s, i) => s.classList.toggle('active', i === 0));
+        current = 0;
+      });
+    });
+  </script>
+
+</body>
+</html>

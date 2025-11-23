@@ -8,13 +8,22 @@ create database BACKEND_CUOIKY
 --============================================ TẠO BẢNG =================================
 go 
 use BACKEND_CUOIKY
+--Bảng User
+go
+create table [dbo].[User]
+(
+    id int primary key identity(1,1),
+    username nvarchar(50) not null unique,
+    password nvarchar(100) not null,
+    role nvarchar(50) check (role in ('admin', 'customer'))
+)
 --Bảng Product
 create table [dbo].[Product]
 (
-	id int primary key identity(1,1),
-	name nvarchar(100) not null,
-    price int check (price >= 0),
-    description nvarchar(500),
+    id int primary key identity(1,1),
+    name nvarchar(100) not null,
+    price decimal check (price >= 0),
+    description nvarchar(max),
     stock int check (stock >= 0)
 )
 --Bảng Customer
@@ -22,20 +31,12 @@ go
 create table [dbo].[Customer]
 (
     id int primary key identity(1,1),
+    userid int references [dbo].[User](id) unique,
     name nvarchar(100) not null,
     email nvarchar(100),
     phonenumber nvarchar(15),
     address nvarchar(200)
 )
-
--- Thêm cột UserId vào bảng Customer
-ALTER TABLE [dbo].[Customer] ADD userid INT NULL;
--- Tạo ràng buộc: 1 User chỉ có tối đa 1 Customer
-ALTER TABLE [dbo].[Customer] 
-ADD CONSTRAINT FK_Customer_User FOREIGN KEY (userid) REFERENCES [dbo].[User](id);
--- (Tùy chọn) Đảm bảo không có 2 Customer cùng UserId
-ALTER TABLE [dbo].[Customer] 
-ADD CONSTRAINT UQ_Customer_UserId UNIQUE (userid);
 
 --Bảng Order
 go
@@ -58,24 +59,62 @@ create table [dbo].[OrderDetail]
     primary key (OrderId, ProductId)
 )
 
---Bảng User
-go
-create table [dbo].[User]
-(
-    id int primary key identity(1,1),
-    username nvarchar(50) not null unique,
-    password nvarchar(100) not null,
-    role nvarchar(50) check (role in ('admin', 'customer'))
-)
--- Reset identity cho bảng Product
-DBCC CHECKIDENT ('Product', RESEED, 0);
+--------------------------
+-- TRIGGER Product
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_Product
+ON Product
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Product)
+    BEGIN
+        DBCC CHECKIDENT ('Product', RESEED, 1);
+    END
+END
+GO
 
--- Reset identity cho bảng Customer
-DBCC CHECKIDENT ('Customer', RESEED, 0);
+--------------------------
+-- TRIGGER Customer
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_Customer
+ON Customer
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Customer)
+    BEGIN
+        DBCC CHECKIDENT ('Customer', RESEED, 1);
+    END
+END
+GO
 
--- Reset identity cho bảng Order
-DBCC CHECKIDENT ('Order', RESEED, 0);
+--------------------------
+-- TRIGGER Order
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_Order
+ON [Order]
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM [Order])
+    BEGIN
+        DBCC CHECKIDENT ('Order', RESEED, 1);
+    END
+END
+GO
 
--- Reset identity cho bảng User
-DBCC CHECKIDENT ('User', RESEED, 0);
-
+--------------------------
+-- TRIGGER User
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_User
+ON [User]
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM [User])
+    BEGIN
+        DBCC CHECKIDENT ('User', RESEED, 1);
+    END
+END
+GO

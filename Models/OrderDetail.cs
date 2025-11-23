@@ -11,7 +11,7 @@ namespace Backend_CuoiKy.Models
         [Key, Column(Order = 1)]
         public int ProductId { get; set; }
         public int Quantity { get; set; }
-        public int UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
         public Order Order { get; set; }
         public Product Product { get; set; }
     }
