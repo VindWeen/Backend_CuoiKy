@@ -13,10 +13,12 @@ namespace Backend_CuoiKy.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly EmailService _emailService;
 
-        public OrdersController(AppDbContext context)
+        public OrdersController(AppDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // Lấy tất cả đơn hàng (Admin)
@@ -128,8 +130,9 @@ namespace Backend_CuoiKy.Controllers
                 };
 
                 _context.Order.Add(order);
-                await _context.SaveChangesAsync();  // ⭐ cần để có order.Id
+                await _context.SaveChangesAsync();
 
+                var detailList = new List<OrderDetail>();
                 // 2) Tạo danh sách chi tiết
                 foreach (var item in dto.Items)
                 {
@@ -147,13 +150,14 @@ namespace Backend_CuoiKy.Controllers
 
                     var detail = new OrderDetail
                     {
-                        OrderId = order.Id,         // ⭐ phải gán trực tiếp FK
-                        ProductId = product.Id,     // ⭐ phải gán trực tiếp FK
+                        OrderId = order.Id,      
+                        ProductId = product.Id,    
                         Quantity = item.Quantity,
                         UnitPrice = product.Price,
-                        Product = product   // ★ gán navigation
+                        Product = product  
                     };
 
+                    detailList.Add(detail);
                     _context.OrderDetail.Add(detail);
 
                     total += (int)(product.Price * item.Quantity);
@@ -164,6 +168,42 @@ namespace Backend_CuoiKy.Controllers
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                // Gửi email thông báo đơn hàng mới
+                string subject = $"Xác nhận đơn hàng #{order.Id}";
+
+                string itemsHtml = string.Join("", detailList.Select(d =>
+                    $@"
+            <tr>
+                <td>{d.Product.Name}</td>
+                <td>{d.Quantity}</td>
+                <td>{d.UnitPrice:N0} VND</td>
+                <td>{(d.Quantity * d.UnitPrice):N0} VND</td>
+            </tr>
+            "
+                ));
+
+                string body = $@"
+            <h2>Đơn hàng của bạn đã được xác nhận!</h2>
+            <p><strong>Mã đơn:</strong> {order.Id}</p>
+            <p><strong>Ngày đặt:</strong> {order.OrderDate}</p>
+
+            <table border='1' cellpadding='8' cellspacing='0'>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Tổng</th>
+                </tr>
+                {itemsHtml}
+            </table>
+
+            <p><strong>Tổng tiền:</strong> {order.TotalAmount:N0} VND</p>
+            <br>
+            <p>Cảm ơn bạn đã đặt hàng!</p>
+        ";
+
+                await _emailService.SendAsync(customer.Email, subject, body);
 
                 return Ok(new { message = "Tạo đơn hàng thành công", orderId = order.Id });
             }
