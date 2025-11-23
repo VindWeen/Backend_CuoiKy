@@ -176,7 +176,7 @@ button:disabled {
   color: #1e40af;
 }
 
-
+/* Thanh menu trang bên trái gồm 5 nút */
 .floating-sidebar {
   position: fixed;
   left: 20px;
@@ -295,6 +295,31 @@ button:disabled {
   opacity: 1;
   visibility: visible;
   left: 76px;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Khi đang ở trang hiện tại thì thêm class active */
+.sidebar-btn.active .cart-badge {
+  background: white;
+  color: #6366f1;
 }
 
 /* Responsive */

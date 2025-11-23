@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "d1c7WA5R250=",
+  "dgSpecHash": "ZJtEETtphLQ=",
   "success": true,
   "projectFilePath": "D:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fw622\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\fw622\\.nuget\\packages\\log4net\\3.2.0\\log4net.3.2.0.nupkg.sha512",
     "C:\\Users\\fw622\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.0\\microsoft.aspnetcore.authentication.jwtbearer.8.0.0.nupkg.sha512",
     "C:\\Users\\fw622\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.20\\microsoft.aspnetcore.openapi.8.0.20.nupkg.sha512",
     "C:\\Users\\fw622\\.nuget\\packages\\microsoft.data.sqlclient\\2.1.7\\microsoft.data.sqlclient.2.1.7.nupkg.sha512",

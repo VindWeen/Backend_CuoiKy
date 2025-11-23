@@ -20,8 +20,8 @@ create table [dbo].[User]
 --Bảng Product
 create table [dbo].[Product]
 (
-    id int primary key identity(1,1),
-    name nvarchar(100) not null,
+	id int primary key identity(1,1),
+	name nvarchar(100) not null,
     price decimal check (price >= 0),
     description nvarchar(max),
     stock int check (stock >= 0)
@@ -31,7 +31,7 @@ go
 create table [dbo].[Customer]
 (
     id int primary key identity(1,1),
-    userid int references [dbo].[User](id) unique,
+	userid int references [dbo].[User](id) unique,
     name nvarchar(100) not null,
     email nvarchar(100),
     phonenumber nvarchar(15),
@@ -44,7 +44,7 @@ create table [dbo].[Order]
 (
     Id int primary key identity(1,1),
     CustomerId int foreign key (CustomerId) references [dbo].[Customer] (id),
-    OrderDate date not null,
+    OrderDate DateTime not null,
     Status nvarchar(50),
     TotalAmount decimal(18,2) check (TotalAmount >= 0)
 )
@@ -58,6 +58,7 @@ create table [dbo].[OrderDetail]
     UnitPrice decimal(18,2) check (UnitPrice >= 0),
     primary key (OrderId, ProductId)
 )
+
 
 --------------------------
 -- TRIGGER Product

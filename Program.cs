@@ -5,12 +5,18 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
-
+using log4net;
+using log4net.Config;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// ====== CẤU HÌNH LOG4NET ======
+var logRepository = LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly());
+var log4netFile = new FileInfo("log4net.config");
+XmlConfigurator.Configure(logRepository, log4netFile);
 
 // lấy key từ config
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -19,6 +25,7 @@ var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddTransient<EmailService>();
 builder.Services.AddSwaggerGen(c =>
 {
     // Thêm nút Authorize
