@@ -22,7 +22,7 @@ create table [dbo].[Product]
 (
 	id int primary key identity(1,1),
 	name nvarchar(100) not null,
-    price int check (price >= 0),
+    price decimal check (price >= 0),
     description nvarchar(max),
     stock int check (stock >= 0)
 )
@@ -44,7 +44,7 @@ create table [dbo].[Order]
 (
     Id int primary key identity(1,1),
     CustomerId int foreign key (CustomerId) references [dbo].[Customer] (id),
-    OrderDate date not null,
+    OrderDate DateTime not null,
     Status nvarchar(50),
     TotalAmount decimal(18,2) check (TotalAmount >= 0)
 )
@@ -60,14 +60,62 @@ create table [dbo].[OrderDetail]
 )
 
 
--- Reset identity cho bảng Product
-DBCC CHECKIDENT ('Product', RESEED, 1);
+--------------------------
+-- TRIGGER Product
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_Product
+ON Product
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Product)
+    BEGIN
+        DBCC CHECKIDENT ('Product', RESEED, 1);
+    END
+END
+GO
 
--- Reset identity cho bảng Customer
-DBCC CHECKIDENT ('Customer', RESEED, 1);
+--------------------------
+-- TRIGGER Customer
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_Customer
+ON Customer
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Customer)
+    BEGIN
+        DBCC CHECKIDENT ('Customer', RESEED, 1);
+    END
+END
+GO
 
--- Reset identity cho bảng Order
-DBCC CHECKIDENT ('Order', RESEED, 1);
+--------------------------
+-- TRIGGER Order
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_Order
+ON [Order]
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM [Order])
+    BEGIN
+        DBCC CHECKIDENT ('Order', RESEED, 1);
+    END
+END
+GO
 
--- Reset identity cho bảng User
-DBCC CHECKIDENT ('User', RESEED, 1);
+--------------------------
+-- TRIGGER User
+--------------------------
+CREATE TRIGGER TRG_ResetIdentity_User
+ON [User]
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM [User])
+    BEGIN
+        DBCC CHECKIDENT ('User', RESEED, 1);
+    END
+END
+GO

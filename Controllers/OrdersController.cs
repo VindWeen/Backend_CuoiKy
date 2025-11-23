@@ -65,6 +65,7 @@ namespace Backend_CuoiKy.Controllers
         {
             // Lấy userId và role từ token
             var userId = GetUserIdFromToken();
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             // Tìm đơn hàng
@@ -73,7 +74,7 @@ namespace Backend_CuoiKy.Controllers
             if (order == null) return NotFound();
 
             // Kiểm tra quyền truy cập
-            if (userRole != "Admin" && order.CustomerId != userId)
+            if (userRole != "Admin" && order.CustomerId != customer.Id)
                 return Forbid("Bạn không có quyền xem đơn hàng này.");
 
             // Lấy chi tiết đơn hàng
@@ -150,11 +151,11 @@ namespace Backend_CuoiKy.Controllers
 
                     var detail = new OrderDetail
                     {
-                        OrderId = order.Id,      
-                        ProductId = product.Id,    
+                        OrderId = order.Id,
+                        ProductId = product.Id,
                         Quantity = item.Quantity,
                         UnitPrice = product.Price,
-                        Product = product  
+                        Product = product
                     };
 
                     detailList.Add(detail);
