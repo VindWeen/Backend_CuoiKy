@@ -2,6 +2,45 @@ const API = "http://localhost:5114/api/product";
 let products = [];
 let editId = null;
 
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px;
+        z-index: 9999; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ============ BẢO VỆ TRANG ADMIN ============
+(function checkAdminAccess() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const token = localStorage.getItem('token');
+
+    if (!token || !user || user.role !== 'Admin') {
+        // Xóa hết nội dung trang ngay lập tức
+        document.body.innerHTML = `
+            <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;font-family:sans-serif;">
+                <h2 style="color:#ef4444;">
+                    ${!token || !user ? 'Bạn cần đăng nhập!' : 'Bạn không có quyền truy cập trang này!'}
+                </h2>
+                <p>Đang chuyển hướng...</p>
+            </div>
+        `;
+
+        setTimeout(() => {
+            window.location.href = (!token || !user) ? 'LogReg.html' : 'Product.html';
+        }, 1500);
+
+        // DỪNG HOÀN TOÀN việc thực thi JS phía dưới
+        throw new Error('Stop script execution');
+    }
+
+    console.log('Chào Admin:', user.role);
+})();
+
 // Load danh sách sản phẩm khi mở trang
 async function loadProducts() {
   try {
@@ -21,7 +60,7 @@ async function loadProducts() {
   }
 }
 
-// Hiển thị bảng sản phẩm
+// Hiển thị bảng sản phẩm + rút gọn mô tả + nút xem chi tiết
 function renderTable() {
   const tbody = document.getElementById("productList");
   tbody.innerHTML = "";
@@ -34,8 +73,15 @@ function renderTable() {
   products.forEach(p => {
     const tr = document.createElement("tr");
 
-    // Đường dẫn ảnh: /Images/{id}.jpg
     const imageUrl = p.id ? `/Images/${p.id}.jpg` : 'https://via.placeholder.com/80';
+
+    // Rút gọn mô tả (100 ký tự)
+    const maxLength = 100;
+    const shortDesc = p.description && p.description.length > maxLength
+      ? p.description.slice(0, maxLength) + "..."
+      : (p.description || '<em style="color:#94a3b8">Chưa có mô tả</em>');
+
+    const fullDesc = p.description || "Không có mô tả chi tiết.";
 
     tr.innerHTML = `
       <td data-label="Ảnh">
@@ -46,7 +92,12 @@ function renderTable() {
       </td>
       <td data-label="Tên"><strong>${p.name || 'Chưa đặt tên'}</strong></td>
       <td data-label="Giá" class="price">${Number(p.price).toLocaleString('vi-VN')} ₫</td>
-      <td data-label="Mô tả">${p.description || '<em style="color:#94a3b8">Chưa có mô tả</em>'}</td>
+      <td data-label="Mô tả">
+        ${shortDesc}
+        ${p.description && p.description.length > maxLength 
+          ? `<span class="detail-btn" onclick="showProductDescription('${p.name.replace(/'/g, "\\'")}', \`${fullDesc.replace(/`/g, "\\`").replace(/\\/g, "\\\\")}\`)">Xem chi tiết</span>`
+          : ""}
+      </td>
       <td data-label="Số lượng"><strong>${p.stock}</strong></td>
       <td data-label="Chức năng" class="actions">
         <button class="btn btn-edit" onclick="editProduct(${p.id})">Sửa</button>
@@ -165,6 +216,7 @@ function clearForm() {
   document.getElementById("description").value = "";
   document.getElementById("quantity").value = "";
   document.getElementById("image").value = "";
+  document.querySelector(".file-input-label").textContent = "Chọn ảnh sản phẩm";
   document.querySelectorAll(".current-preview").forEach(el => el.remove());
 
   editId = null;
@@ -200,3 +252,26 @@ document.addEventListener("DOMContentLoaded", () => {
 // Export hàm global để onclick trong HTML gọi được
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+
+// Hiển thị popup mô tả chi tiết
+function showProductDescription(productName, fullDescription) {
+  const modal = document.getElementById("descModal");
+  const title = document.getElementById("descModalTitle");
+  const content = document.getElementById("descModalContent");
+
+  title.textContent = productName;
+  content.innerHTML = fullDescription.replace(/\n/g, '<br>');
+
+  modal.classList.add("active");
+}
+
+// Đóng popup khi bấm X hoặc ngoài vùng
+document.addEventListener("click", (e) => {
+  const modal = document.getElementById("descModal");
+  if (e.target === modal || e.target.classList.contains("close-desc")) {
+    modal.classList.remove("active");
+  }
+});
+
+// Export hàm để onclick dùng được
+window.showProductDescription = showProductDescription;

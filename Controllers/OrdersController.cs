@@ -13,10 +13,12 @@ namespace Backend_CuoiKy.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly EmailService _emailService;
 
-        public OrdersController(AppDbContext context)
+        public OrdersController(AppDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // Lấy tất cả đơn hàng (Admin)
@@ -63,6 +65,7 @@ namespace Backend_CuoiKy.Controllers
         {
             // Lấy userId và role từ token
             var userId = GetUserIdFromToken();
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             // Tìm đơn hàng
@@ -71,7 +74,7 @@ namespace Backend_CuoiKy.Controllers
             if (order == null) return NotFound();
 
             // Kiểm tra quyền truy cập
-            if (userRole != "Admin" && order.CustomerId!= userId)
+            if (userRole != "Admin" && order.CustomerId != customer.Id)
                 return Forbid("Bạn không có quyền xem đơn hàng này.");
 
             // Lấy chi tiết đơn hàng
@@ -103,79 +106,115 @@ namespace Backend_CuoiKy.Controllers
         [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO dto)
         {
-            // Kiểm tra giỏ hàng không rỗng
             if (dto.Items == null || dto.Items.Count == 0)
                 return BadRequest("Giỏ hàng trống.");
 
-            // Lấy userId từ token
-            var customerId = GetUserIdFromToken();
-            if (customerId == null) return Unauthorized();
+            if (dto.CustomerId <= 0)
+                return BadRequest("Thiếu CustomerId.");
 
-            // Sử dụng transaction để đảm bảo tính toàn vẹn dữ liệu
+            var customer = await _context.Customer.FindAsync(dto.CustomerId);
+            if (customer == null)
+                return BadRequest("Customer không tồn tại.");
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 int total = 0;
 
+                // 1) Tạo đơn hàng trước
                 var order = new Order
                 {
-                    CustomerId = customerId.Value,
+                    CustomerId = dto.CustomerId,
                     OrderDate = DateTime.Now,
-                    Status = "Pending",
+                    Status = "Đã xử lí",
                     TotalAmount = 0
                 };
 
                 _context.Order.Add(order);
                 await _context.SaveChangesAsync();
 
+                var detailList = new List<OrderDetail>();
+                // 2) Tạo danh sách chi tiết
                 foreach (var item in dto.Items)
                 {
-                    // Kiểm tra sản phẩm và tồn kho
                     var product = await _context.Product
                         .FirstOrDefaultAsync(p => p.Id == item.ProductId);
 
-                    // Nếu không tìm thấy sản phẩm
                     if (product == null)
                         return BadRequest($"Không tìm thấy sản phẩm ID = {item.ProductId}");
 
-                    // Nếu không đủ tồn kho
                     if (product.Stock < item.Quantity)
                         return BadRequest($"Sản phẩm {product.Name} không đủ tồn kho.");
 
-                    // Cập nhật tồn kho
+                    // Trừ tồn kho
                     product.Stock -= item.Quantity;
 
-                    // Tạo chi tiết đơn hàng
                     var detail = new OrderDetail
                     {
                         OrderId = order.Id,
                         ProductId = product.Id,
                         Quantity = item.Quantity,
-                        UnitPrice = product.Price
+                        UnitPrice = product.Price,
+                        Product = product
                     };
-                    // Thêm chi tiết đơn hàng
+
+                    detailList.Add(detail);
                     _context.OrderDetail.Add(detail);
 
-                    // Cập nhật tổng tiền
                     total += (int)(product.Price * item.Quantity);
                 }
-                // Cập nhật tổng tiền đơn hàng
-                order.TotalAmount = total;
 
-                // Lưu thay đổi
+                // Cập nhật tổng giá
+                order.TotalAmount = total + 30000;
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                // Gửi email thông báo đơn hàng mới
+                string subject = $"Xác nhận đơn hàng #{order.Id}";
+
+                string itemsHtml = string.Join("", detailList.Select(d =>
+                    $@"
+            <tr>
+                <td>{d.Product.Name}</td>
+                <td>{d.Quantity}</td>
+                <td>{d.UnitPrice:N0} VND</td>
+                <td>{(d.Quantity * d.UnitPrice):N0} VND</td>
+            </tr>
+            "
+                ));
+
+                string body = $@"
+            <h2>Đơn hàng của bạn đã được xác nhận!</h2>
+            <p><strong>Mã đơn:</strong> {order.Id}</p>
+            <p><strong>Ngày đặt:</strong> {order.OrderDate}</p>
+
+            <table border='1' cellpadding='8' cellspacing='0'>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Tổng</th>
+                </tr>
+                {itemsHtml}
+            </table>
+
+            <p><strong>Tổng tiền:</strong> {order.TotalAmount:N0} VND</p>
+            <br>
+            <p>Cảm ơn bạn đã đặt hàng!</p>
+        ";
+
+                await _emailService.SendAsync(customer.Email, subject, body);
 
                 return Ok(new { message = "Tạo đơn hàng thành công", orderId = order.Id });
             }
             catch (Exception ex)
             {
-                // Nếu có lỗi, rollback transaction
                 await transaction.RollbackAsync();
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+
 
         // Lấy đơn hàng của người dùng hiện tại
         [HttpGet("my-orders")]
@@ -223,9 +262,8 @@ namespace Backend_CuoiKy.Controllers
         // Lấy userId từ token
         private int? GetUserIdFromToken()
         {
-            // Lấy userId từ token
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (int.TryParse(id, out int userId))
+            var idClaim = User.FindFirst("userId")?.Value;
+            if (int.TryParse(idClaim, out int userId))
                 return userId;
 
             return null;

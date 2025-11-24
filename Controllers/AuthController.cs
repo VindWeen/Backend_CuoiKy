@@ -4,7 +4,6 @@ using Backend_CuoiKy.Models;
 using Backend_CuoiKy.Data;
 using System.Security.Cryptography;
 using System.Text;
-using Backend_Cuoiky.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -51,7 +50,7 @@ namespace Backend_CuoiKy.Controllers
             _db.User.Add(user);
             _db.SaveChanges();
 
-            return Ok("Đăng ký thành công.");
+            return Ok(new { message = "Tạo tài khoản thành công", userId = user.Id });
         }
 
         [HttpPost("login")]
@@ -68,8 +67,18 @@ namespace Backend_CuoiKy.Controllers
 
             string token = GenerateJwtToken(user);
 
+            // Lấy customerId từ bảng Customer
+            var customer = _db.Customer.FirstOrDefault(c => c.UserId == user.Id);
+            int? customerId = customer?.Id;
+
             // Trả về token cùng thông tin người dùng
-            return Ok(new { Message = "Đăng nhập thành công", userID = user.Id, Role = user.Role, Token = token });
+            return Ok(new { 
+                Message = "Đăng nhập thành công", 
+                userID = user.Id, 
+                Role = user.Role, 
+                customerID = customerId,
+                Token = token 
+            });
         }
         // Hàm tạo JWT
         private string GenerateJwtToken(User user)

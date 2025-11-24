@@ -9,6 +9,7 @@ namespace Backend_CuoiKy.Data
 
         public DbSet<Product> Product { get; set; }
 <<<<<<< HEAD
+<<<<<<< HEAD
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetail> OrderDetail { get; set; }
         public DbSet<Customer> Customer { get; set; }
@@ -17,6 +18,30 @@ namespace Backend_CuoiKy.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Customer> Customers { get; set; }
 >>>>>>> 75295e041ed5eb6a96d9e4b02b3af7c19938430a
+=======
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderDetail> OrderDetail { get; set; }
+        public DbSet<Customer> Customer { get; set; }
+>>>>>>> TTVQ
         public DbSet<User> User { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Composite key cho OrderDetail
+            modelBuilder.Entity<OrderDetail>()
+                .HasKey(od => new { od.OrderId, od.ProductId });
+
+            // Optional: cấu hình quan hệ
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.Order)
+                .WithMany(o => o.OrderDetails)
+                .HasForeignKey(od => od.OrderId);
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.Product)
+                .WithMany()
+                .HasForeignKey(od => od.ProductId);
+        }
     }
 }
