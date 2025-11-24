@@ -126,7 +126,7 @@ namespace Backend_CuoiKy.Controllers
                 {
                     CustomerId = dto.CustomerId,
                     OrderDate = DateTime.Now,
-                    Status = "Pending",
+                    Status = "Đã xử lí",
                     TotalAmount = 0
                 };
 

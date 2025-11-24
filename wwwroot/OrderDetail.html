@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chi tiết đơn hàng #1001</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/OrderDetail.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="title">Chi tiết đơn hàng</h1>
+
+    <div class="order-card">
+      <div class="order-header">
+        <div class="order-id">Đơn hàng #1001</div>
+        <div class="order-status success">Đã giao hàng</div>
+      </div>
+
+      <div class="order-info">
+        <div class="info-row">
+          <span>Khách hàng</span>
+          <strong>Nguyễn Thị Ngọc Ánh</strong>
+        </div>
+        <div class="info-row">
+          <span>Ngày đặt hàng</span>
+          <strong>15/04/2025, 14:30</strong>
+        </div>
+        <div style = "display: none" class="info-row">
+        </div>
+        <div class="info-row">
+          <span>Giao đến</span>
+          <strong>123 Đường Láng, Đống Đa, Hà Nội</strong>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <h3>Sản phẩm đã mua</h3>
+
+        <div class="item">
+          <img src="https://via.placeholder.com/80" alt="Áo thun basic">
+          <div class="item-details">
+            <h4>Áo thun cotton oversize trắng</h4>
+            <p>Số lượng: <strong>2</strong> × 229.000 ₫</p>
+          </div>
+          <div class="item-total">458.000 ₫</div>
+        </div>
+
+        <div class="item">
+          <img src="https://via.placeholder.com/80" alt="Quần jeans">
+          <div class="item-details">
+            <h4>Quần jeans baggy rách gối</h4>
+            <p>Số lượng: <strong>1</strong> × 399.000 ₫</p>
+          </div>
+          <div class="item-total">399.000 ₫</div>
+        </div>
+
+        <div class="item">
+          <img src="https://via.placeholder.com/80" alt="Mũ bucket">
+          <div class="item-details">
+            <h4>Mũ bucket thêu chữ NY</h4>
+            <p>Số lượng: <strong>1</strong> × 159.000 ₫</p>
+          </div>
+          <div class="item-total">159.000 ₫</div>
+        </div>
+      </div>
+
+      <div class="order-summary">
+        <div class="summary-row">
+          <span>Tạm tính</span>
+          <strong>1.016.000 ₫</strong>
+        </div>
+        <div class="summary-row">
+          <span>Phí vận chuyển</span>
+          <strong>30.000 ₫</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Tổng cộng</span>
+          <strong class="final-total">1.046.000 ₫</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="./js/OrderDetail.js"></script>
+</body>
+</html>

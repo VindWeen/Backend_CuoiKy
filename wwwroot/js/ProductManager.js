@@ -204,6 +204,7 @@ function clearForm() {
   document.getElementById("description").value = "";
   document.getElementById("quantity").value = "";
   document.getElementById("image").value = "";
+  document.querySelector(".file-input-label").textContent = "Chọn ảnh sản phẩm";
   document.querySelectorAll(".current-preview").forEach(el => el.remove());
 
   editId = null;
