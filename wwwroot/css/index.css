@@ -110,22 +110,6 @@ body {
   -webkit-text-fill-color: transparent;
   margin-bottom: 32px;
 }
-.btn-view {
-  padding: 18px 48px; /* ĐÃ SỬA LỖI Ở ĐÂY */
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  font-size: 1.2rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 15px 40px rgba(99,102,241,0.4);
-  transition: all 0.4s;
-}
-.btn-view:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 25px 50px rgba(99,102,241,0.5);
-}
 
 /* Slider ảnh sản phẩm */
 .product-image.slider {

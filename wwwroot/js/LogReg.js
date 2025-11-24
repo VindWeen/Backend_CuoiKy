@@ -107,7 +107,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
       if (data.role === "Admin") {
         window.location.href = 'ProductManager.html';
       } else {
-        window.location.href = 'Product.html'; //trang cho customer
+        window.location.href = 'index.html';
       }
     } else {
       const error = await response.text();

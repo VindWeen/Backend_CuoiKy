@@ -14,10 +14,16 @@ body {
   text-align: center;
   font-size: 3rem;
   font-weight: 800;
-  margin-bottom: 2.5rem;
+  margin: 0 auto 3rem;
   background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 2.5rem; }
 }
 
 .cart-wrapper {
