@@ -268,5 +268,69 @@ namespace Backend_CuoiKy.Controllers
 
             return null;
         }
+        // Cập nhật đơn hàng
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDTO dto)
+        {
+            var userId = GetUserIdFromToken();
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var order = await _context.Order.FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return NotFound("Không tìm thấy đơn hàng.");
+
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
+
+            // User thường chỉ được sửa đơn của mình (vd: hủy đơn)
+            if (userRole != "Admin" && order.CustomerId != customer.Id)
+                return Forbid("Bạn không có quyền cập nhật đơn hàng này.");
+
+            // Nếu user không phải admin -> chỉ cho phép hủy đơn
+            if (userRole != "Admin")
+            {
+                if (dto.Status != "Đã hủy")
+                    return BadRequest("Bạn chỉ có thể hủy đơn.");
+            }
+
+            // Cập nhật trạng thái đơn
+            order.Status = dto.Status ?? order.Status;
+
+            // Nếu admin muốn cập nhật items
+            if (userRole == "Admin" && dto.Items != null)
+            {
+                // Xóa toàn bộ item cũ
+                var oldItems = await _context.OrderDetail.Where(d => d.OrderId == id).ToListAsync();
+                _context.OrderDetail.RemoveRange(oldItems);
+
+                int total = 0;
+
+                // Thêm lại item mới
+                foreach (var it in dto.Items)
+                {
+                    var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == it.ProductId);
+                    if (product == null)
+                        return BadRequest($"Không tìm thấy sản phẩm ID {it.ProductId}");
+
+                    var newDetail = new OrderDetail
+                    {
+                        OrderId = id,
+                        ProductId = product.Id,
+                        Quantity = it.Quantity,
+                        UnitPrice = product.Price
+                    };
+
+                    _context.OrderDetail.Add(newDetail);
+
+                    total += (int)(product.Price * it.Quantity);
+                }
+
+                // Cập nhật tổng tiền
+                order.TotalAmount = total + 30000;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Cập nhật đơn hàng thành công." });
+        }
     }
 }
