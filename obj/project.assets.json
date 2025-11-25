@@ -2473,23 +2473,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\fw622\\.nuget\\packages\\": {},
-    "D:\\Visual Studio 2022\\NuGetPackages": {}
+    "C:\\Users\\Nhac Phuoc\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+      "projectUniqueName": "E:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
       "projectName": "Backend_CuoiKy",
-      "projectPath": "d:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
-      "packagesPath": "C:\\Users\\fw622\\.nuget\\packages\\",
-      "outputPath": "d:\\Backend_CuoiKy\\obj\\",
+      "projectPath": "E:\\Backend_CuoiKy\\Backend_CuoiKy.csproj",
+      "packagesPath": "C:\\Users\\Nhac Phuoc\\.nuget\\packages\\",
+      "outputPath": "E:\\Backend_CuoiKy\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "D:\\Visual Studio 2022\\NuGetPackages"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\fw622\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Nhac Phuoc\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2576,16 +2576,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file d:\\Backend_CuoiKy\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0."
-    }
-  ]
+  }
 }
