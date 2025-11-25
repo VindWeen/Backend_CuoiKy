@@ -21,6 +21,21 @@ namespace Backend_CuoiKy.Controllers
             _emailService = emailService;
         }
 
+        
+        // Endpoint test SQL
+        [HttpGet("test-sql")]
+        public async Task<IActionResult> TestSql()
+        {
+            try
+            {
+                var count = await _context.Order.CountAsync();
+                return Ok($"SQL OK: {count} orders");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
         // Lấy tất cả đơn hàng (Admin)
         [Authorize(Roles = "Admin")]
         [HttpGet]

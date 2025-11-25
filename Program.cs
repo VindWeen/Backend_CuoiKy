@@ -65,11 +65,14 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Swagger UI
+// if (app.Environment.IsDevelopment())
+// {
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+}
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 app.UseAuthentication();
 app.UseAuthorization();
 
