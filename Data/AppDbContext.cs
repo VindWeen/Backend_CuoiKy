@@ -8,21 +8,9 @@ namespace Backend_CuoiKy.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Product> Product { get; set; }
-<<<<<<< HEAD
-<<<<<<< HEAD
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetail> OrderDetail { get; set; }
         public DbSet<Customer> Customer { get; set; }
-=======
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Customer> Customers { get; set; }
->>>>>>> 75295e041ed5eb6a96d9e4b02b3af7c19938430a
-=======
-        public DbSet<Order> Order { get; set; }
-        public DbSet<OrderDetail> OrderDetail { get; set; }
-        public DbSet<Customer> Customer { get; set; }
->>>>>>> TTVQ
         public DbSet<User> User { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
