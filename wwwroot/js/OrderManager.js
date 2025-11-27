@@ -78,12 +78,12 @@ function toggleSort() {
 
 // Trả về class CSS theo trạng thái
 function getStatusClass(status) {
-  if (status.includes('Đã giao') || status === 'Delivered') return 'delivered';
-  if (status.includes('Đang xử lý') || status === 'Processed') return 'processed';
-  return 'pending';
+  if (status === "Đang xử lý" || status === "Processing") return "processing";
+  if (status === "Đã xử lý" || status === "Completed") return "completed";
+  return "processing";
 }
 
-// Mở popup chi tiết - ĐÃ SỬA ĐẸP + HIỂN THỊ ẢNH + TÊN SẢN PHẨM
+// Mở popup chi tiết + cho phép cập nhật trạng thái
 async function openOrderDetail(orderId) {
   const modal = document.getElementById('orderModal');
   const body = document.getElementById('modalBody');
@@ -108,9 +108,9 @@ async function openOrderDetail(orderId) {
         const cust = await custRes.json();
         customerName = cust.name || "Chưa có tên";
       }
-    } catch {}
+    } catch { }
 
-    // Tải từng sản phẩm để lấy tên + ảnh
+    // Tải sản phẩm cho danh sách
     const itemsHtml = await Promise.all(order.items.map(async (item) => {
       let productName = `Sản phẩm #${item.productId}`;
       let imgUrl = 'https://via.placeholder.com/80';
@@ -119,13 +119,12 @@ async function openOrderDetail(orderId) {
         const prodRes = await fetch(`${API_BASE}/product/${item.productId}`);
         if (prodRes.ok) {
           const prod = await prodRes.json();
-          productName = prod.name || productName;
+          productName = prod.name;
           imgUrl = `http://localhost:5114/Images/${item.productId}.jpg`;
         }
-      } catch {}
+      } catch { }
 
       const subtotal = item.quantity * item.unitPrice;
-
       return `
         <div class="item">
           <img src="${imgUrl}" alt="${productName}" onerror="this.src='https://via.placeholder.com/80?text=SP'" />
@@ -140,21 +139,44 @@ async function openOrderDetail(orderId) {
 
     const subtotal = order.totalAmount - 30000;
 
+    // THÊM PHẦN CẬP NHẬT TRẠNG THÁI Ở ĐÂY
     body.innerHTML = `
       <div class="order-header">
         <div class="order-id">Đơn hàng #${order.id}</div>
-        <div class="order-status success">${order.status}</div>
+      </div>
+
+      <div class="status-update-section" style="margin-bottom: 24px; padding: 16px; background: #f8fafc; border-radius: 16px; border: 2px dashed #e0e7ff;">
+        <p style="margin-bottom: 12px; font-weight: 600; color: #1e293b;">Trạng thái đơn hàng:</p>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <select id="statusSelect" style="
+            padding: 10px 16px; 
+            border: 2px solid #e0e7ff; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            min-width: 180px;
+            background: white;
+            ">
+            ">
+            <option value="Đang xử lý" ${order.status === 'Đang xử lý' ? 'selected' : ''}>Đang xử lý</option>
+            <option value="Đã xử lý" ${order.status === 'Đã xử lý' ? 'selected' : ''}>Đã xử lý</option>
+          </select>
+          <button onclick="updateOrderStatus(${order.id})" style="
+            padding: 10px 24px; 
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            cursor: pointer;
+            ">
+            Cập nhật
+          </button>
+        </div>
       </div>
 
       <div class="order-info">
-        <div class="info-row">
-          <span>Khách hàng</span>
-          <strong>${customerName}</strong>
-        </div>
-        <div class="info-row">
-          <span>Ngày đặt hàng</span>
-          <strong>${formatDate(order.orderDate)}</strong>
-        </div>
+        <div class="info-row"><span>Khách hàng</span><strong>${customerName}</strong></div>
+        <div class="info-row"><span>Ngày đặt</span><strong>${formatDate(order.orderDate)}</strong></div>
       </div>
 
       <div class="order-items">
@@ -163,24 +185,44 @@ async function openOrderDetail(orderId) {
       </div>
 
       <div class="order-summary">
-        <div class="summary-row">
-          <span>Tạm tính</span>
-          <strong>${subtotal.toLocaleString()} ₫</strong>
-        </div>
-        <div class="summary-row">
-          <span>Phí vận chuyển</span>
-          <strong>30.000 ₫</strong>
-        </div>
-        <div class="summary-row total">
-          <span>Tổng cộng</span>
-          <strong class="final-total">${order.totalAmount.toLocaleString()} ₫</strong>
-        </div>
+        <div class="summary-row"><span>Tạm tính</span><strong>${subtotal.toLocaleString()} ₫</strong></div>
+        <div class="summary-row"><span>Phí vận chuyển</span><strong>30.000 ₫</strong></div>
+        <div class="summary-row total"><span>Tổng cộng</span><strong class="final-total">${order.totalAmount.toLocaleString()} ₫</strong></div>
       </div>
     `;
 
     modal.classList.add('active');
   } catch (err) {
-    alert("Lỗi tải chi tiết đơn hàng: " + err.message);
+    alert("Lỗi: " + err.message);
+  }
+}
+
+// HÀM MỚI: Cập nhật trạng thái
+async function updateOrderStatus(orderId) {
+  const select = document.getElementById('statusSelect');
+  const newStatus = select.value;
+  const token = localStorage.getItem('token');
+
+  try {
+    const res = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ status: newStatus })
+    });
+
+    if (res.ok) {
+      alert("Cập nhật trạng thái thành công!");
+      renderOrders(); // refresh lại danh sách
+      openOrderDetail(orderId); // reload lại popup để thấy thay đổi
+    } else {
+      const error = await res.text();
+      alert("Lỗi: " + error);
+    }
+  } catch (err) {
+    alert("Lỗi kết nối: " + err.message);
   }
 }
 
