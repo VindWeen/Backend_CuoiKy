@@ -293,7 +293,7 @@ button:disabled {
   }
 }
 
-/* Thanh menu trang bên trái gồm 5 nút */
+/* Thanh menu trang bên trái gồm 6 nút */
 .floating-sidebar {
   position: fixed;
   left: 20px;
@@ -448,4 +448,9 @@ button:disabled {
   }
   .sidebar-btn { width: 56px; height: 56px; }
   .sidebar-btn svg { width: 24px; height: 24px; }
+}
+
+
+.sidebar-btn[data-tooltip="Đơn hàng"] svg {
+  stroke-width: 2.2;
 }

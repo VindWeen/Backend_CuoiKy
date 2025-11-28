@@ -20,8 +20,13 @@ create table [dbo].[User]
 --Bảng Product
 create table [dbo].[Product]
 (
+<<<<<<< HEAD
+    id int primary key identity(1,1),
+    name nvarchar(100) not null,
+=======
 	id int primary key identity(1,1),
 	name nvarchar(100) not null,
+>>>>>>> origin/TTVQ
     price decimal check (price >= 0),
     description nvarchar(max),
     stock int check (stock >= 0)
@@ -58,7 +63,6 @@ create table [dbo].[OrderDetail]
     UnitPrice decimal(18,2) check (UnitPrice >= 0),
     primary key (OrderId, ProductId)
 )
-
 
 --------------------------
 -- TRIGGER Product
