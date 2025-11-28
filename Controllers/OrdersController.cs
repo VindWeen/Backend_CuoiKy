@@ -21,6 +21,21 @@ namespace Backend_CuoiKy.Controllers
             _emailService = emailService;
         }
 
+
+        // Endpoint test SQL
+        [HttpGet("test-sql")]
+        public async Task<IActionResult> TestSql()
+        {
+            try
+            {
+                var count = await _context.Order.CountAsync();
+                return Ok($"SQL OK: {count} orders");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
         // Lấy tất cả đơn hàng (Admin)
         [Authorize(Roles = "Admin")]
         [HttpGet]
@@ -289,6 +304,57 @@ namespace Backend_CuoiKy.Controllers
             order.Status = dto.Status;
             await _context.SaveChangesAsync();
 
+            // --- Lấy thông tin customer từ CustomerId ---
+            var customer = await _context.Customer
+                .FirstOrDefaultAsync(c => c.Id == order.CustomerId);
+
+            if (customer == null)
+                return BadRequest("Không tìm thấy thông tin khách hàng để gửi email");
+
+            // --- Lấy chi tiết đơn hàng ---
+            var details = await _context.OrderDetail
+                .Include(d => d.Product)
+                .Where(d => d.OrderId == order.Id)
+                .ToListAsync();
+
+            // --- Chỉ gửi email khi trạng thái = "Đã xử lý" ---
+            if (dto.Status == "Đã xử lý")
+            {
+                string subject = $"Đơn hàng #{order.Id} đã được xử lý";
+
+                string itemsHtml = string.Join("", details.Select(d =>
+                    $@"
+                <tr>
+                    <td>{d.Product.Name}</td>
+                    <td>{d.Quantity}</td>
+                    <td>{d.UnitPrice:N0} VND</td>
+                    <td>{(d.Quantity * d.UnitPrice):N0} VND</td>
+                </tr>
+            "
+                ));
+
+                string body = $@"
+            <h2>Đơn hàng của bạn đã được xử lý!</h2>
+            <p><strong>Mã đơn:</strong> {order.Id}</p>
+            <p><strong>Ngày đặt:</strong> {order.OrderDate}</p>
+
+            <table border='1' cellpadding='8' cellspacing='0'>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Tổng</th>
+                </tr>
+                {itemsHtml}
+            </table>
+
+            <p><strong>Tổng tiền:</strong> {order.TotalAmount:N0} VND</p>
+            <br>
+            <p>Cảm ơn bạn đã mua hàng!</p>
+        ";
+
+                await _emailService.SendAsync(customer.Email, subject, body);
+            }
             return Ok(new { message = "Cập nhật trạng thái thành công", status = order.Status });
         }
     }

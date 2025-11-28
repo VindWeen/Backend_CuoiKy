@@ -59,7 +59,6 @@ create table [dbo].[OrderDetail]
     primary key (OrderId, ProductId)
 )
 
-
 --------------------------
 -- TRIGGER Product
 --------------------------
