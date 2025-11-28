@@ -73,6 +73,14 @@ if (app.Environment.IsDevelopment())
 }
     app.UseSwagger();
     app.UseSwaggerUI();
+<<<<<<< HEAD
+=======
+}
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseDeveloperExceptionPage();
+// }
+>>>>>>> origin/TTVQ
 app.UseAuthentication();
 app.UseAuthorization();
 

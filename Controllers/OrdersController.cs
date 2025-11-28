@@ -76,28 +76,32 @@ namespace Backend_CuoiKy.Controllers
 
         // Lấy chi tiết đơn hàng theo ID
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetOrder(int id)
         {
-            // Lấy userId và role từ token
-            var userId = GetUserIdFromToken();
-            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Token không hợp lệ");
+
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            // Tìm đơn hàng
             var order = await _context.Order.FirstOrDefaultAsync(x => x.Id == id);
+            if (order == null) return NotFound("Không tìm thấy đơn hàng");
 
-            if (order == null) return NotFound();
+            // Tìm customer từ userId
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
 
-            // Kiểm tra quyền truy cập
-            if (userRole != "Admin" && order.CustomerId != customer.Id)
-                return Forbid("Bạn không có quyền xem đơn hàng này.");
+            // Kiểm tra quyền
+            if (userRole != "Admin")
+            {
+                if (customer == null || order.CustomerId != customer.Id)
+                    return Forbid("Bạn không có quyền xem đơn hàng này");
+            }
 
-            // Lấy chi tiết đơn hàng
             var details = await _context.OrderDetail
                 .Where(d => d.OrderId == id)
                 .ToListAsync();
 
-            // Tạo DTO để trả về
             var dto = new OrderDTO
             {
                 Id = order.Id,
@@ -141,7 +145,7 @@ namespace Backend_CuoiKy.Controllers
                 {
                     CustomerId = dto.CustomerId,
                     OrderDate = DateTime.Now,
-                    Status = "Đã xử lí",
+                    Status = "Đang xử lí",
                     TotalAmount = 0
                 };
 
@@ -230,27 +234,28 @@ namespace Backend_CuoiKy.Controllers
             }
         }
 
-
-        // Lấy đơn hàng của người dùng hiện tại
+        // Lấy đơn hàng của chính mình (customer)
         [HttpGet("my-orders")]
         [Authorize]
         public async Task<IActionResult> GetMyOrders()
         {
-            // Lấy userId từ token
-            var customerId = GetUserIdFromToken();
-            if (customerId == null) return Unauthorized();
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Token không hợp lệ");
 
-            // Lấy đơn hàng của người dùng
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (customer == null)
+                return NotFound("Không tìm thấy thông tin khách hàng. Vui lòng cập nhật hồ sơ.");
+
             var orders = await _context.Order
-                .Where(o => o.CustomerId == customerId.Value)
+                .Where(o => o.CustomerId == customer.Id)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
             var result = new List<OrderDTO>();
 
-            // Xử lý từng đơn hàng để lấy chi tiết
             foreach (var o in orders)
             {
-                // Lấy chi tiết đơn hàng
                 var details = await _context.OrderDetail
                     .Where(d => d.OrderId == o.Id)
                     .ToListAsync();
@@ -283,69 +288,23 @@ namespace Backend_CuoiKy.Controllers
 
             return null;
         }
-        // Cập nhật đơn hàng
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDTO dto)
+
+        // Cập nhật trạng thái đơn hàng (chỉ Admin)
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateStatusDTO dto)
         {
-            var userId = GetUserIdFromToken();
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var order = await _context.Order.FindAsync(id);
+            if (order == null) return NotFound("Không tìm thấy đơn hàng");
 
-            var order = await _context.Order.FirstOrDefaultAsync(o => o.Id == id);
-            if (order == null) return NotFound("Không tìm thấy đơn hàng.");
+            // Chỉ cho phép 2 trạng thái này
+            if (dto.Status != "Đang xử lý" && dto.Status != "Đã xử lý")
+                return BadRequest("Trạng thái không hợp lệ");
 
-            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.UserId == userId);
-
-            // User thường chỉ được sửa đơn của mình (vd: hủy đơn)
-            if (userRole != "Admin" && order.CustomerId != customer.Id)
-                return Forbid("Bạn không có quyền cập nhật đơn hàng này.");
-
-            // Nếu user không phải admin -> chỉ cho phép hủy đơn
-            if (userRole != "Admin")
-            {
-                if (dto.Status != "Đã hủy")
-                    return BadRequest("Bạn chỉ có thể hủy đơn.");
-            }
-
-            // Cập nhật trạng thái đơn
-            order.Status = dto.Status ?? order.Status;
-
-            // Nếu admin muốn cập nhật items
-            if (userRole == "Admin" && dto.Items != null)
-            {
-                // Xóa toàn bộ item cũ
-                var oldItems = await _context.OrderDetail.Where(d => d.OrderId == id).ToListAsync();
-                _context.OrderDetail.RemoveRange(oldItems);
-
-                int total = 0;
-
-                // Thêm lại item mới
-                foreach (var it in dto.Items)
-                {
-                    var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == it.ProductId);
-                    if (product == null)
-                        return BadRequest($"Không tìm thấy sản phẩm ID {it.ProductId}");
-
-                    var newDetail = new OrderDetail
-                    {
-                        OrderId = id,
-                        ProductId = product.Id,
-                        Quantity = it.Quantity,
-                        UnitPrice = product.Price
-                    };
-
-                    _context.OrderDetail.Add(newDetail);
-
-                    total += (int)(product.Price * it.Quantity);
-                }
-
-                // Cập nhật tổng tiền
-                order.TotalAmount = total + 30000;
-            }
-
+            order.Status = dto.Status;
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Cập nhật đơn hàng thành công." });
+            return Ok(new { message = "Cập nhật trạng thái thành công", status = order.Status });
         }
     }
 }
