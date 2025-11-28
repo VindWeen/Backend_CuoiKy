@@ -26,20 +26,25 @@ namespace Backend_CuoiKy.Controllers
         // Hàm hash mật khẩu
         private string HashPassword(string password)
         {
+            // Sử dụng SHA256 để hash mật khẩu
             using var sha = SHA256.Create();
+            // Chuyển đổi mật khẩu thành mảng byte và hash
             var bytes = Encoding.UTF8.GetBytes(password);
+            // Tạo hash
             var hash = sha.ComputeHash(bytes);
+            // Chuyển đổi hash thành chuỗi Base64 để lưu trữ
             return Convert.ToBase64String(hash);
         }
         // Đăng ký người dùng
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDTO dto)
         {
+            // Kiểm tra nếu tên đăng nhập đã tồn tại
             if (_db.User.Any(u => u.Username == dto.Username))
                 return BadRequest("Tài khoản đã tồn tại.");
-
+            // Hash mật khẩu
             string hash = HashPassword(dto.Password);
-
+            // Tạo người dùng mới
             var user = new User
             {
                 Username = dto.Username,
@@ -56,15 +61,16 @@ namespace Backend_CuoiKy.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDTO dto)
         {
+            // Hash mật khẩu
             string hash = HashPassword(dto.Password);
-
+            // Tìm người dùng với tên đăng nhập và mật khẩu đã hash
             var user = _db.User.FirstOrDefault(u => 
                 u.Username == dto.Username 
                 && u.Password == hash);
-
+            // Nếu không tìm thấy người dùng, trả về lỗi
             if (user == null)
                 return Unauthorized("Tên đăng nhập hoặc mật khẩu không đúng.");
-
+            // Tạo JWT
             string token = GenerateJwtToken(user);
 
             // Lấy customerId từ bảng Customer

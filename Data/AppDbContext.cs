@@ -12,20 +12,19 @@ namespace Backend_CuoiKy.Data
         public DbSet<OrderDetail> OrderDetail { get; set; }
         public DbSet<Customer> Customer { get; set; }
         public DbSet<User> User { get; set; }
+        // Cấu hình model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Composite key cho OrderDetail
+            // Cấu hình khóa chính cho bảng OrderDetail (khóa kép)
             modelBuilder.Entity<OrderDetail>()
                 .HasKey(od => new { od.OrderId, od.ProductId });
-
-            // Optional: cấu hình quan hệ
+            // Cấu hình quan hệ giữa Order và OrderDetail
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Order)
                 .WithMany(o => o.OrderDetails)
                 .HasForeignKey(od => od.OrderId);
-
+            // Cấu hình quan hệ giữa Product và OrderDetail
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Product)
                 .WithMany()

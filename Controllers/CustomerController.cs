@@ -20,6 +20,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            // Lấy tất cả khách hàng
             var data = await _context.Customer.ToListAsync();
             return Ok(data);
         }
@@ -28,6 +29,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            // Lấy khách hàng theo ID
             var customer = await _context.Customer.FindAsync(id);
             if (customer == null) return NotFound();
 
@@ -38,6 +40,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Customer model)
         {
+            // Tạo khách hàng mới
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _context.Customer.Add(model);
@@ -50,6 +53,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Customer model)
         {
+            // Cập nhật thông tin khách hàng
             var customer = await _context.Customer.FindAsync(id);
             if (customer == null) return NotFound();
 
@@ -66,6 +70,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // Tìm khách hàng theo ID và xóa
             var customer = await _context.Customer.FindAsync(id);
             if (customer == null) return NotFound();
 

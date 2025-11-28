@@ -22,6 +22,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            // Lấy tất cả sản phẩm
             var list = await _db.Product.ToListAsync();
             return Ok(list);
         }
@@ -30,6 +31,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            // Lấy sản phẩm theo ID
             var product = await _db.Product.FindAsync(id);
             if (product == null)
                 return NotFound();
@@ -42,9 +44,10 @@ namespace Backend_CuoiKy.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] Product product, IFormFile? file)
         {
+            // Thêm sản phẩm mới
             _db.Product.Add(product);
             await _db.SaveChangesAsync(); // ID tự sinh ra
-
+            // Lưu file ảnh nếu có
             if (file != null && file.Length > 0)
             {
                 var savePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{product.Id}.jpg");
@@ -60,6 +63,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] Product product, IFormFile? file)
         {
+            // Cập nhật thông tin sản phẩm
             var existing = await _db.Product.FindAsync(id);
             if (existing == null) return NotFound();
 
@@ -69,7 +73,7 @@ namespace Backend_CuoiKy.Controllers
             existing.Stock = product.Stock;
 
             await _db.SaveChangesAsync();
-
+            // Cập nhật file ảnh nếu có
             if (file != null && file.Length > 0)
             {
                 var savePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{id}.jpg");
@@ -86,6 +90,7 @@ namespace Backend_CuoiKy.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // Xóa sản phẩm theo ID
             var product = await _db.Product.FindAsync(id);
             if (product == null) return NotFound();
 
@@ -104,12 +109,13 @@ namespace Backend_CuoiKy.Controllers
         [HttpPost("upload/{id}")]
         public async Task<IActionResult> UploadImage(int id, IFormFile file)
         {
+            // Tải lên ảnh cho sản phẩm
             var product = await _db.Product.FindAsync(id);
             if (product == null) return NotFound();
-
+            // Lưu file ảnh
             if (file == null || file.Length == 0)
                 return BadRequest("File không hợp lệ");
-
+            // Lưu file ảnh
             var savePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", $"{id}.jpg");
             using var stream = new FileStream(savePath, FileMode.Create);
             await file.CopyToAsync(stream);
