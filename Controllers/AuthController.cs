@@ -32,7 +32,7 @@ namespace Backend_CuoiKy.Controllers
             var bytes = Encoding.UTF8.GetBytes(password);
             // Tạo hash
             var hash = sha.ComputeHash(bytes);
-            // Chuyển đổi hash thành chuỗi Base64 để lưu trữ
+            // Trả về 
             return Convert.ToBase64String(hash);
         }
         // Đăng ký người dùng
@@ -102,7 +102,8 @@ namespace Backend_CuoiKy.Controllers
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
+                // Thời hạn của token: 24 giờ kể từ thời điểm tạo
+                expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: cred
             );
 
