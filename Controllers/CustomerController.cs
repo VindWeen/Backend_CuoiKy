@@ -1,10 +1,12 @@
 using Backend_CuoiKy.Data;
 using Backend_CuoiKy.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend_CuoiKy.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")] 
     [ApiController]
     public class CustomerController : ControllerBase
@@ -65,8 +67,8 @@ namespace Backend_CuoiKy.Controllers
             await _context.SaveChangesAsync();
             return Ok(customer);
         }
-
         // DELETE: api/customer/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
